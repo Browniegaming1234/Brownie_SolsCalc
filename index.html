@@ -197,21 +197,14 @@
     {name: "Equinox", normal: 2500000000, biomeMult: null}
   ];
 
-  // Helper to format numbers with commas, handles null and NaN gracefully
-  function formatNumber(num) {
-    if (num === null || num === undefined || isNaN(num)) return 'Nil';
-    return num.toLocaleString();
-  }
+  // Helper function to format numbers with commas
+function formatNumber(num) {
+  if (num === null || num === undefined || isNaN(num)) return 'Nil';
+  return num.toLocaleString();
+}
 
-  // Sort auras by normal ascending
-  auraData.sort((a, b) => a.normal - b.normal);
-
-  const auraListDiv = document.getElementById('auraList');
-  const luckInput = document.getElementById('luck');
-  const calculateBtn = document.getElementById('calculateBtn');
-
-  // Calculate rolls needed for 99.9% chance given chance per roll
-  function createAuraList() {
+// Create aura list UI elements
+function createAuraList() {
   auraListDiv.innerHTML = '';
   auraData.forEach(aura => {
     const item = document.createElement('div');
@@ -240,8 +233,15 @@
   });
 }
 
-  // Calculate and update rolls needed
-  function calculate() {
+// Calculate rolls needed for 99.9% chance
+function rollsNeeded(chance) {
+  const targetProb = 0.999;
+  if (!chance || chance <= 0) return Infinity;
+  return Math.ceil(Math.log(1 - targetProb) / Math.log(1 - chance));
+}
+
+// Calculate and update rolls needed
+function calculate() {
   const luck = parseFloat(luckInput.value);
   if (isNaN(luck) || luck <= 0) {
     alert('Please enter a valid luck value greater than 0.');
@@ -280,16 +280,18 @@
 
     item.querySelector('.rolls-info').textContent = text;
   });
-  // Initialize aura list on page load
-  createAuraList();
+}
 
-  // Button and enter key trigger calculation
-  calculateBtn.addEventListener('click', calculate);
-  luckInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      calculate();
-    }
-  });
+// Initialize aura list on page load
+createAuraList();
+
+// Set up event listeners
+calculateBtn.addEventListener('click', calculate);
+luckInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    calculate();
+  }
+});
 </script>
 
 </body>
