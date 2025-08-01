@@ -314,29 +314,26 @@
     });
 
     function calculate() {
-      const luck = parseFloat(document.getElementById('luck').value);
-      const result = document.getElementById('result');
-      if (isNaN(luck) || luck <= 0) {
-        result.textContent = 'Please enter a valid luck value.';
-        return;
-      }
-      result.textContent = '';
-      auraListDiv.querySelectorAll('.aura-item').forEach(item => {
-        const val = parseFloat(item.dataset.normal);
-        const bm = item.dataset.biomeMult ? parseFloat(item.dataset.biomeMult) : null;
-        const nativeChance = luck / val;
-        const nativeRolls = nativeChance > 0 ? rollsNeeded(nativeChance) : '∞';
-        let text;
-        if (bm && bm > 0) {
-          const btChance = luck / (val / bm);
-          const bt = btChance > 0 ? rollsNeeded(btChance) : '∞';
-          text = Native Rolls: ${nativeRolls}, Breakthrough Rolls: ${bt};
-        } else {
-          text = Rolls needed: ${nativeRolls};
-        }
-        item.querySelector('.rolls-info').textContent = text;
-      });
+  const luck = parseFloat(document.getElementById('luck').value);
+  const result = document.getElementById('result');
+  if (isNaN(luck) || luck <= 0) {
+    result.textContent = 'Please enter a valid luck value.';
+    return;
+  }
+  result.textContent = '';
+  auraListDiv.querySelectorAll('.aura-item').forEach(item => {
+    const val = parseFloat(item.dataset.normal);
+    const bm = item.dataset.biomeMult ? parseFloat(item.dataset.biomeMult) : null;
+    const nativeChance = luck / val;
+    const nativeRolls = nativeChance > 0 ? rollsNeeded(nativeChance) : '∞';
+    let text;
+    if (bm && bm > 0) {
+      const btChance = luck / (val / bm);
+      const bt = btChance > 0 ? rollsNeeded(btChance) : '∞';
+      text = `Native Rolls: ${nativeRolls}, Breakthrough Rolls: ${bt}`;
+    } else {
+      text = `Rolls needed: ${nativeRolls}`;
     }
-  </script>
-</body>
-</html>
+    item.querySelector('.rolls-info').textContent = text;
+  });
+}
