@@ -1,149 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Sol's RNG Aura Calculator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sol's RNG Aura Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      background: #0a0a12;
+      color: #ddd;
+      font-family: 'Exo 2', sans-serif;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    h1 {
+      font-size: 2.5rem;
+      color: #00ffff;
+      text-align: center;
+    }
+    label, input, button {
+      display: block;
+      width: 100%;
+      margin-top: 15px;
+    }
+    input {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: none;
+      background: #22222a;
+      color: #eee;
+    }
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      background: #00ffff;
+      color: #000;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffff;
+    }
+    button:hover {
+      background: #00cccc;
+    }
+    #result {
+      margin-top: 20px;
+      background: #11111a;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 0 10px #004040;
+    }
+    #auraList {
+      margin-top: 30px;
+      max-height: 600px;
+      overflow-y: auto;
+      border-radius: 8px;
+      background: #121224;
+      border: 1px solid #222;
+    }
+    .aura-item {
+      padding: 10px 15px;
+      border-bottom: 1px solid #222;
+    }
+    .rolls-info {
+      font-size: 0.95rem;
+      color: #bbb;
+      margin-top: 4px;
+    }
+    #auraList::-webkit-scrollbar {
+      width: 8px;
+    }
+    #auraList::-webkit-scrollbar-thumb {
+      background: #00cccc;
+      border-radius: 4px;
+    }
 
-<!-- Required Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@600&family=Faster+One&display=swap" rel="stylesheet" />
+    /* Aura-specific title colors / gradients – directly from Sol's RNG wiki */
+    .Common { color: #ffffff; }
+    .Uncommon { color: #90ee90; }
+    .Natural { color: #00ff00; }
+    .Good { color: #cccccc; }
+    .Ink { color: #000000; }
+    .Glock { color: #a9a9a9; }
+    .Ash { color: #000000; }
+    .Player { color: #ffffff; }
+    .Aquatic { color: #00bfff; }
+    .Nautilus { background: linear-gradient(90deg, #1e90ff, #06a0c6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .AquaticFlame { color: #ff8c00; }
 
-<style>
-  body {
-    background-color: #0a0a12;
-    color: #ddd;
-    font-family: 'Exo 2', sans-serif;
-    margin: 0;
-    padding: 20px;
-    min-height: 100vh;
-  }
+    .Emerald { color: #00a354; }
+    .Topaz { color: #985d19; }
+    .Jackpot { color: #ffea00; }
+    .Sapphire { color: #0f52ba; }
+    .Aquamarine { color: #7fffd4; }
 
-  h1 {
-    text-align: center;
-    font-family: 'Exo 2', sans-serif;
-    font-size: 3rem;
-    color: #00ffff;
-    text-shadow:
-      0 0 5px #00ffff,
-      0 0 10px #00ffff,
-      0 0 20px #00ffff;
-    margin-bottom: 20px;
-  }
+    .Divinus { color: #fff700; }
+    .Crystallized { color: #cf9fff; }
+    .Precious { color: #4169e1; }
+    .Magnetic { background: linear-gradient(90deg, #0000ff, #ff0000); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .Sidereum { background: linear-gradient(90deg, #da70d6, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-  label {
-    font-weight: 600;
-    display: block;
-    margin-top: 15px;
-    margin-bottom: 6px;
-    font-size: 1.2rem;
-  }
+    .Flushed { color: #fff700; }
+    .FlushedLobotomy { color: #ff8c00; }
+    .Quartz { color: #ff1493; }
 
-  input[type=number] {
-    width: 100%;
-    padding: 8px 12px;
-    font-size: 1.1rem;
-    border-radius: 5px;
-    border: none;
-    background-color: #22222a;
-    color: #eee;
-    box-shadow: inset 0 0 8px #111;
-  }
+    .Forbidden { color: #090925; }
+    .Diaboli { color: #db1a1a; }
+    .Bleeding { color: #ff0000; }
+    .LostSoul { color: #a880e8; }
+    .Undead { color: #739b00; }
+    .Corrosive { color: #7ac74f; }
+    .Hazard { background: linear-gradient(90deg, #8a2be2, #1e90ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .HazardRays { color: #1e90ff; }
+    .Rage { color: #dc143c; }
+    .RageHeated { color: #ff4500; }
+    .UndeadDevil { color: #d10c04; }
+    .DiaboliVoid { color: #9e1f0f; }
 
-  button {
-    margin-top: 20px;
-    background-color: #00ffff;
-    color: #000;
-    font-weight: 700;
-    font-size: 1.3rem;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 0 10px #00ffff;
-    transition: background-color 0.2s ease;
-  }
+    .Gilded { color: #ffac1c; }
+    .Ruby { color: #e10303; }
+    .Jade { color: #00a86b; }
+    .Bounded { color: #4169e1; }
+    .Celestial { background: linear-gradient(90deg, #add8e6, #cfb3f5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .Sailor { color: #00ccff; }
+    .Poseidon { color: #02a2b9; }
+    .CelestialDivine { color: #fbb03b; }
+    .Exotic { color: #000000; }
+    .ExoticAPEX { color: #000000; }
+    .SailorFlyingDutchman { color: #44ccff; }
+    .Sovereign { background: linear-gradient(90deg, #0000ff, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-  button:hover {
-    background-color: #00cccc;
-  }
+    .Aegis { color: #4b6d99; }
+    .AbyssalHunter { color: #0b5f6f; }
 
-  #result {
-    margin-top: 30px;
-    padding: 20px;
-    background-color: #11111a;
-    border-radius: 10px;
-    box-shadow: 0 0 15px #005555;
-    min-height: 120px;
-  }
-
-  #auraList {
-    margin-top: 30px;
-    max-height: 600px;
-    overflow-y: auto;
-    padding-right: 10px;
-    border: 1px solid #222;
-    border-radius: 8px;
-    background-color: #121224;
-  }
-
-  .aura-item {
-    padding: 10px 15px;
-    border-bottom: 1px solid #222;
-  }
-
-  /* Rolls info text */
-  .rolls-info {
-    margin-left: 20px;
-    font-size: 1rem;
-    color: #bbb;
-  }
-
-  /* Scrollbar styling */
-  #auraList::-webkit-scrollbar {
-    width: 8px;
-  }
-  #auraList::-webkit-scrollbar-thumb {
-    background: #00cccc;
-    border-radius: 4px;
-  }
-  #auraList::-webkit-scrollbar-track {
-    background: #121224;
-  }
-
-  /* === Custom Aura Fonts and Styles === */
-
-  /* Example auras: add more below */
-
-  .Divinus {
-    font-family: 'Exo 2', sans-serif;
-    color: #ffcc00;
-    text-shadow: 0 0 8px #ffcc00;
-  }
-
-  .Jackpot {
-    font-family: 'Exo 2', sans-serif;
-    color: #e6e600;
-    text-shadow: 0 0 6px #e6e600;
-  }
-
-  /* Add more aura-specific styles here as needed */
-
-</style>
+    .Comet { color: #ffffff; }
+    .Permafrost { color: #c5f2ff; }
+    .Stormal { color: #9bc3ff; }
+    .Galaxy { color: #ffffff; }
+    .LunarFullMoon { color: #ffd700; }
+    .Twilight { color: #8a2be2; }
+    .Arcane { color: #663399; }
+    .Starscourge { color: #dc143c; }
+    .Gravitational { color: #8a2be2; }
+    .BoundedUnbounded { color: #4169e1; }
+    .Virtual { color: #00ffff; }
+    .Savior { color: #e6e6fa; }
+    .SolarSolstice { color: #ffff00; }
+    .Hades { color: #ff8c00; }
+    .HYPERVOLT { color: #8a2be2; }
+    .Nihility { color: #a9a9a9; }
+    .Glitch { color: #000000; }
+    .StormalHurricane { color: #a9a9a9; }
+    .SIRIUS { color: #ffd700; }
+    .ArcaneLegacy { color: #663399; }
+    .Chromatic { color: #ff66cc; }
+    .ArcaneDark { color: #4b0082; }
+    .Ethereal { color: #eeeeee; }
+    .Overseer { color: #dda0dd; }
+    .Matrix { color: #00ffaa; }
+    .TwilightIridescentMemory { color: #ffffff; }
+    .ChromaticGenesis { color: #ccccff; }
+    .StarscourgeRadiant { color: #add8e6; }
+    .Overture { color: #4169e1; }
+    .Symphony { color: #add8e6; }
+    .Impeached { color: #8a2be2; }
+    .Oppression { color: #000000; }
+    .Archangel { color: #ffd700; }
+    .OvertureHistory { color: #4169e1; }
+    .Ruins { color: #7b7b7b; }
+    .Atlas { color: #2f4f4f; }
+    .Apostolos { color: #ffffff; }
+    .Gargantua { color: #696969; }
+    .Pixelation { color: #000000; }
+    .Luminosity { color: #add8e6; }
+    .Equinox { color: #ffffff; }
+  </style>
 </head>
 <body>
+  <h1>Sol's RNG Aura Calculator</h1>
+  <label for="luck">Enter Your Luck:</label>
+  <input type="number" id="luck" placeholder="Your Luck" min="0" />
+  <button onclick="calculate()">Calculate Rolls</button>
+  <div id="result"></div>
+  <div id="auraList"></div>
 
-<h1>Sol's RNG Aura Calculator</h1>
-
-<label for="luck">Enter Your Luck:</label>
-<input type="number" id="luck" min="0" step="any" placeholder="Enter your luck value" />
-
-<button onclick="calculate()">Calculate Rolls Needed</button>
-
-<div id="result" aria-live="polite"></div>
-
-<div id="auraList" aria-label="List of all auras sorted by rarity"></div>
-
-<script>
+  <script>
+    <script>
   const auraData = [
     {name: "Common", normal: 2, biomeMult: null},
     {name: "Uncommon", normal: 4, biomeMult: null},
@@ -244,87 +288,56 @@
     {name: "Equinox", normal: 2500000000, biomeMult: null}
   ];
 
-  // You can keep this function if you want to show rarity tiers in text
-  function getRarityTier(value) {
-    if (value >= 1 && value <= 999) return "Basic";
-    if (value >= 1000 && value <= 9999) return "Epic";
-    if (value >= 10000 && value <= 99998) return "Unique";
-    if (value >= 99999 && value <= 999999) return "Legendary";
-    if (value >= 1000000 && value <= 9999999) return "Mythical";
-    if (value >= 10000000 && value <= 99999998) return "Exalted";
-    if (value >= 99999999 && value <= 999999999) return "Glorious";
-    if (value >= 1000000000) return "Transcendent";
-    return "Unknown";
-  }
-
-  const TARGET_PROB = 0.999;
-  function rollsNeeded(chancePerRoll) {
-    if (chancePerRoll <= 0) return Infinity;
-    return Math.ceil(Math.log(1 - TARGET_PROB) / Math.log(1 - chancePerRoll));
-  }
-
-  const auraListDiv = document.getElementById('auraList');
-  auraData.sort((a, b) => a.normal - b.normal);
-
-  auraData.forEach(aura => {
-    const tier = getRarityTier(aura.normal);
-    const item = document.createElement('div');
-    item.className = 'aura-item';
-
-    const title = document.createElement('div');
-    title.textContent = aura.name + ` [${tier}]`;
-
-    // Only add aura-specific class, no rarity tier class
-    const auraClass = aura.name.replace(/[^a-zA-Z0-9]/g, '');
-    title.className = auraClass;
-
-    item.appendChild(title);
-
-    const rollsInfo = document.createElement('div');
-    rollsInfo.className = 'rolls-info';
-    rollsInfo.textContent = 'Rolls needed: —';
-    item.appendChild(rollsInfo);
-
-    item.dataset.normal = aura.normal;
-    item.dataset.biomeMult = aura.biomeMult;
-    item.dataset.tier = tier;
-
-    auraListDiv.appendChild(item);
-  });
-
-  function calculate() {
-    const luckInput = parseFloat(document.getElementById('luck').value);
-    const resultDiv = document.getElementById('result');
-    if (isNaN(luckInput) || luckInput <= 0) {
-      resultDiv.textContent = 'Please enter a valid positive luck value.';
-      return;
+    function rollsNeeded(chance) {
+      const targetProb = 0.999;
+      return chance > 0 ? Math.ceil(Math.log(1 - targetProb) / Math.log(1 - chance)) : Infinity;
     }
-    resultDiv.textContent = '';
 
-    const auraItems = auraListDiv.querySelectorAll('.aura-item');
-    auraItems.forEach(item => {
-      const rarityVal = parseFloat(item.dataset.normal);
-      const biomeMult = item.dataset.biomeMult ? parseFloat(item.dataset.biomeMult) : null;
+    const auraListDiv = document.getElementById('auraList');
+    auraData.sort((a, b) => a.normal - b.normal);
 
-      const nativeChance = luckInput / rarityVal;
-      const nativeRolls = nativeChance > 0 ? rollsNeeded(nativeChance) : '∞';
+    auraData.forEach(aura => {
+      const item = document.createElement('div');
+      item.className = 'aura-item';
+      const title = document.createElement('div');
+      const auraClass = aura.name.replace(/[^a-zA-Z0-9]/g, '');
+      title.textContent = aura.name;
+      title.className = auraClass;
+      item.appendChild(title);
 
-      let btRolls = 'N/A';
-      if (biomeMult && biomeMult > 0) {
-        const btChance = luckInput / (rarityVal / biomeMult);
-        btRolls = btChance > 0 ? rollsNeeded(btChance) : '∞';
-      }
+      const rollsInfo = document.createElement('div');
+      rollsInfo.className = 'rolls-info';
+      item.appendChild(rollsInfo);
 
-      const rollsText = biomeMult && biomeMult > 0
-        ? `Native Rolls: ${nativeRolls}, Breakthrough Rolls: ${btRolls}`
-        : `Rolls needed: ${nativeRolls}`;
-
-      item.querySelector('.rolls-info').textContent = rollsText;
+      item.dataset.normal = aura.normal;
+      item.dataset.biomeMult = aura.biomeMult;
+      auraListDiv.appendChild(item);
     });
 
-    resultDiv.textContent = 'Rolls calculation complete. Scroll down to see results for each aura.';
-  }
-</script>
-
+    function calculate() {
+      const luck = parseFloat(document.getElementById('luck').value);
+      const result = document.getElementById('result');
+      if (isNaN(luck) || luck <= 0) {
+        result.textContent = 'Please enter a valid luck value.';
+        return;
+      }
+      result.textContent = '';
+      auraListDiv.querySelectorAll('.aura-item').forEach(item => {
+        const val = parseFloat(item.dataset.normal);
+        const bm = item.dataset.biomeMult ? parseFloat(item.dataset.biomeMult) : null;
+        const nativeChance = luck / val;
+        const nativeRolls = nativeChance > 0 ? rollsNeeded(nativeChance) : '∞';
+        let text;
+        if (bm && bm > 0) {
+          const btChance = luck / (val / bm);
+          const bt = btChance > 0 ? rollsNeeded(btChance) : '∞';
+          text = `Native Rolls: ${nativeRolls}, Breakthrough Rolls: ${bt}`;
+        } else {
+          text = `Rolls needed: ${nativeRolls}`;
+        }
+        item.querySelector('.rolls-info').textContent = text;
+      });
+    }
+  </script>
 </body>
 </html>
