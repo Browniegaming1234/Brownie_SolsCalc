@@ -1,158 +1,409 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Sol’s RNG Aura Drop Calculator</title>
-  <style>
-    body { font-family: sans-serif; background: #fafafa; padding: 20px; }
-    label, input, select, button { display: block; margin: 10px 0; width: 300px; }
-    .result { margin-top: 20px; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sol's RNG Aura Calculator</title>
+
+<!-- Fonts from Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo+2:wght@600&family=Montserrat+Alternates&family=Orbitron&display=swap" rel="stylesheet" />
+
+<style>
+  body {
+    background-color: #0a0a12;
+    color: #ddd;
+    font-family: 'Exo 2', sans-serif;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    text-align: center;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 3rem;
+    color: #00ffff;
+    text-shadow:
+      0 0 5px #00ffff,
+      0 0 10px #00ffff,
+      0 0 20px #00ffff;
+    margin-bottom: 20px;
+  }
+
+  label {
+    font-weight: 600;
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 6px;
+    font-size: 1.2rem;
+  }
+
+  input[type=number] {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    border: none;
+    background-color: #22222a;
+    color: #eee;
+    box-shadow:
+      inset 0 0 8px #111;
+  }
+
+  button {
+    margin-top: 20px;
+    background-color: #00ffff;
+    color: #000;
+    font-weight: 700;
+    font-size: 1.3rem;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow:
+      0 0 10px #00ffff;
+    transition: background-color 0.2s ease;
+  }
+  button:hover {
+    background-color: #00cccc;
+  }
+
+  #result {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #11111a;
+    border-radius: 10px;
+    box-shadow:
+      0 0 15px #005555;
+    min-height: 120px;
+  }
+
+  #auraList {
+    margin-top: 30px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 10px;
+    border: 1px solid #222;
+    border-radius: 8px;
+    background-color: #121224;
+  }
+
+  .aura-item {
+    padding: 10px 15px;
+    border-bottom: 1px solid #222;
+  }
+
+  /* Aura Title styles by rarity */
+
+  /* Basic: White/light gray, no glow, Exo 2 */
+  .Basic {
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 600;
+    color: #ccc;
+    text-shadow: none;
+    font-size: 1.7rem;
+  }
+
+  /* Epic: Bright blue glow, Orbitron */
+  .Epic {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    color: #3399ff;
+    text-shadow:
+      0 0 6px #3399ff,
+      0 0 12px #3399ff;
+    font-size: 1.7rem;
+  }
+
+  /* Unique: Cyan neon glow, Bebas Neue */
+  .Unique {
+    font-family: 'Bebas Neue', cursive;
+    color: #00ffff;
+    text-shadow:
+      0 0 8px #00ffff,
+      0 0 16px #00ffff;
+    font-size: 1.8rem;
+  }
+
+  /* Legendary: Orange/gold glow, Bebas Neue */
+  .Legendary {
+    font-family: 'Bebas Neue', cursive;
+    color: #ffa500;
+    text-shadow:
+      0 0 8px #ffa500,
+      0 0 18px #ffb733;
+    font-size: 1.8rem;
+  }
+
+  /* Mythical: Purple glow, Montserrat Alternates */
+  .Mythical {
+    font-family: 'Montserrat Alternates', sans-serif;
+    font-weight: 700;
+    color: #b14eff;
+    text-shadow:
+      0 0 10px #b14eff,
+      0 0 22px #b14eff;
+    font-size: 1.9rem;
+  }
+
+  /* Exalted: Hot pink glow, Bebas Neue */
+  .Exalted {
+    font-family: 'Bebas Neue', cursive;
+    color: #ff2d99;
+    text-shadow:
+      0 0 8px #ff2d99,
+      0 0 20px #ff2d99;
+    font-size: 1.9rem;
+  }
+
+  /* Glorious: Yellow glow, Bebas Neue */
+  .Glorious {
+    font-family: 'Bebas Neue', cursive;
+    color: #fff54f;
+    text-shadow:
+      0 0 8px #fff54f,
+      0 0 22px #fff54f;
+    font-size: 2rem;
+  }
+
+  /* Transcendent: Gold gradient with heavy glow, Bebas Neue */
+  .Transcendent {
+    font-family: 'Bebas Neue', cursive;
+    font-weight: 900;
+    font-size: 2rem;
+    background: linear-gradient(90deg, #ffd700, #ffa500, #ffdd44);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow:
+      0 0 12px #ffd700,
+      0 0 25px #ffb700,
+      0 0 40px #ffaf00,
+      0 0 60px #ff9900;
+  }
+
+  .rolls-info {
+    margin-left: 20px;
+    font-size: 1rem;
+    color: #bbb;
+  }
+
+  /* Scrollbar styling for auraList */
+  #auraList::-webkit-scrollbar {
+    width: 8px;
+  }
+  #auraList::-webkit-scrollbar-thumb {
+    background: #00cccc;
+    border-radius: 4px;
+  }
+  #auraList::-webkit-scrollbar-track {
+    background: #121224;
+  }
+</style>
 </head>
 <body>
-  <h1>Sol’s RNG Aura Chance Calculator</h1>
-  <label>Aura:
-    <select id="aura"></select>
-  </label>
-  <label>Luck Multiplier:
-    <input id="luck" type="number" step="0.01" value="1.0">
-  </label>
-  <label>Rolls:
-    <input id="rolls" type="number" value="1000000">
-  </label>
-  <button onclick="calc()">Calculate</button>
-  <div id="result" class="result"></div>
+
+<h1>Sol's RNG Aura Calculator</h1>
+
+<label for="luck">Enter Your Luck:</label>
+<input type="number" id="luck" min="0" step="any" placeholder="Enter your luck value" />
+
+<button onclick="calculate()">Calculate Rolls Needed</button>
+
+<div id="result" aria-live="polite"></div>
+
+<div id="auraList" aria-label="List of all auras sorted by rarity"></div>
 
 <script>
-// Rarity data ordered from easiest (common) to hardest (transcendent), using Era 9 values :contentReference[oaicite:2]{index=2}
-const data = [
-  {name: "Common",          normal: 2,       biomeMult: null},
-  {name: "Uncommon",        normal: 4,       biomeMult: null},
-  {name: "Good",            normal: 5,       biomeMult: null},
-  {name: "Natural",         normal: 8,       biomeMult: null},
-  {name: "Rare",            normal: 16,      biomeMult: null},
-  {name: "Divinus",         normal: 32,      biomeMult: null},
-  {name: "Crystallized",    normal: 64,      biomeMult: null},
-  {name: "Rage",            normal: 128,     biomeMult: null},
-  {name: "Topaz",           normal: 150,     biomeMult: null},
-  {name: "Ruby",            normal: 350,     biomeMult: null},
-  {name: "Forbidden",       normal: 404,     biomeMult: null},
-  {name: "Emerald",         normal: 500,     biomeMult: null},
-  {name: "Gilded",          normal: 512,     biomeMult: 4},
-  {name: "Ink",             normal: 700,     biomeMult: null},
-  {name: "Jackpot",         normal: 777,     biomeMult: null},
-  {name: "Sapphire",        normal: 800,     biomeMult: null},
-  {name: "Aquamarine",      normal: 900,     biomeMult: null},
-  {name: "Diaboli",         normal: 1004,    biomeMult: null},
-  {name: "Precious",        normal: 1024,    biomeMult: null},
-  {name: "Undefined",       normal: 1111,    biomeMult: 1000},
-  {name: "Glock",           normal: 1700,    biomeMult: null},
-  {name: "Magnetic",        normal: 2048,    biomeMult: null},
-  {name: "Ash",             normal: 2300,    biomeMult: null},
-  {name: "Player",          normal: 3000,    biomeMult: null},
-  {name: "Sidereum",        normal: 4096,    biomeMult: null},
-  {name: "Bleeding",        normal: 4444,    biomeMult: null},
-  {name: "Flushed",         normal: 6900,    biomeMult: null},
-  {name: "Hazard",          normal: 7000,    biomeMult: 5},
-  {name: "Quartz",          normal: 8192,    biomeMult: null},
-  {name: "Lost Soul",       normal: 9200,    biomeMult: null},
-  {name: "Undead",          normal: 10000,   biomeMult: 6},
-  {name: "Corrosive",       normal: 12000,   biomeMult: 5},
-  {name: "Comet",           normal: 12000,   biomeMult: 10},
-  {name: "Rage: Heated",    normal: 12800,   biomeMult: null},
-  {name: "Ink Leak",        normal: 14000,   biomeMult: null},
-  {name: "Powered",         normal: 16384,   biomeMult: null},
-  {name: "Permafrost",      normal: 73500,   biomeMult: 3},
-  {name: "Stormal",         normal: 90000,   biomeMult: 3},
-  {name: "Aquatic",         normal: 40000,   biomeMult: null},
-  {name: "Flushed: Lobotomy", normal: 69000, biomeMult: null},
-  {name: "Nautilus",        normal: 70000,   biomeMult: null},
-  {name: "Hazard: Rays",    normal: 70000,   biomeMult: 5},
-  {name: "Exotic",          normal: 99999,   biomeMult: null},
-  {name: "Undead: Devil",   normal: 100000,  biomeMult: 6},
-  {name: "Diaboli: Void",   normal: 100400,  biomeMult: null},
-  {name: "Jade",            normal: 125000,  biomeMult: null},
-  {name: "Bounded",         normal: 200000,  biomeMult: null},
-  {name: "Celestial",       normal: 350000,  biomeMult: null},
-  {name: "Galaxy",          normal: 500000,  biomeMult: 10},
-  {name: "Lunar: Full Moon",normal: 500000,  biomeMult: 10},
-  {name: "Twilight",        normal: 600000,  biomeMult: 10},
-  {name: "Kyawthuite",      normal: 850000,  biomeMult: null},
-  {name: "Arcane",          normal: 1000000, biomeMult: null},
-  {name: "Starscourge",     normal: 1000000, biomeMult: 10},
-  {name: "Magnetic: Reverse Polarity", normal: 1024000, biomeMult: null},
-  {name: "Gravitational",   normal: 2000000, biomeMult: null},
-  {name: "Bounded Unbounded", normal: 2000000, biomeMult: null},
-  {name: "Virtual",         normal: 2500000, biomeMult: null},
-  {name: "Sailor",          normal: 12000000, biomeMult: 4},
-  {name: "Savior",          normal: 3200000, biomeMult: null},
-  {name: "Poseidon",        normal: 3800000, biomeMult: 4},
-  {name: "Aquatic: Flame",  normal: 4000000, biomeMult: null},
-  {name: "Solar: Solstice", normal: 5000000, biomeMult: 10},
-  {name: "Hades",           normal: 6666666, biomeMult: 6},
-  {name: "Celestial Divine", normal: 7000000, biomeMult: null},
-  {name: "HYPER‑VOLT",      normal: 7500000, biomeMult: null},
-  {name: "Nihility",        normal: 9000000, biomeMult: 1000},
-  {name: "Glitch",          normal: 12210110, biomeMult: null},
-  {name: "Stormal Hurricane", normal: 13500000, biomeMult: null},
-  {name: "SIRIUS",          normal: 14000000, biomeMult: null},
-  {name: "Arcane: Legacy",  normal: 15000000, biomeMult: null},
-  {name: "Chromatic",       normal: 20000000, biomeMult: null},
-  {name: "Arcane: Dark",    normal: 30000000, biomeMult: null},
-  {name: "Ethereal",        normal: 35000000, biomeMult: null},
-  {name: "Overseer",        normal: 45000000, biomeMult: null},
-  {name: "Exotic: APEX",    normal: 49999500, biomeMult: null},
-  {name: "Matrix",          normal: 50000000, biomeMult: null},
-  {name: "Twilight: Iridescent Memory", normal: 60000000, biomeMult: 10},
-  {name: "Sailor: Flying Dutchman", normal: 80000000, biomeMult: 4},
-  {name: "Chromatic: GENESIS", normal: 99999999, biomeMult: null},
-  {name: "Starscourge: Radiant", normal: 100000000, biomeMult: 10},
-  {name: "Overture",        normal: 150000000, biomeMult: null},
-  {name: "Symphony",        normal: 175000000, biomeMult: null},
-  {name: "Impeached",       normal: 200000000, biomeMult: null},
-  {name: "Oppression",      normal: 220000000, biomeMult: null}, 
-  {name: "Archangel",       normal: 250000000, biomeMult: null},
-  {name: "Overture: History", normal: 300000000, biomeMult: null},
-  {name: "Ruins",           normal: 300000000, biomeMult: null},
-  {name: "Atlas",           normal: 360000000, biomeMult: null},
-  {name: "Abyssal Hunter",  normal: 400000000, biomeMult: 4},
-  {name: "Apostolos",       normal: 444000000, biomeMult: null},
-  {name: "Gargantua",       normal: 430000000, biomeMult: null},
-  {name: "Sovereign",       normal: 750000000, biomeMult: null},
-  {name: "Aegis",           normal: 825000000, biomeMult: null},
-  {name: "Luminosity",      normal: 1200000000, biomeMult: null},
-  {name: "Pixelation",      normal: 1073741824, biomeMult: null},
-  {name: "Equinox",         normal: 2500000000, biomeMult: null}
-];
+  const auraData = [
+    {name: "Common", normal: 2, biomeMult: null},
+    {name: "Uncommon", normal: 4, biomeMult: null},
+    {name: "Natural", normal: 8, biomeMult: null},
+    {name: "Good", normal: 5, biomeMult: null},
+    {name: "Ink", normal: 700, biomeMult: null},
+    {name: "Glock", normal: 1700, biomeMult: null},
+    {name: "Ash", normal: 2300, biomeMult: null},
+    {name: "Player", normal: 3000, biomeMult: null},
+    {name: "Aquatic", normal: 40000, biomeMult: null},
+    {name: "Nautilus", normal: 70000, biomeMult: null},
+    {name: "Aquatic: Flame", normal: 4000000, biomeMult: null},
 
-const auraSelect = document.getElementById('aura');
-data.forEach(a => {
-  const o = document.createElement('option');
-  o.value = a.name; o.textContent = a.name;
-  auraSelect.appendChild(o);
-});
+    {name: "Emerald", normal: 500, biomeMult: null},
+    {name: "Topaz", normal: 150, biomeMult: null},
+    {name: "Jackpot", normal: 777, biomeMult: null},
+    {name: "Sapphire", normal: 800, biomeMult: null},
+    {name: "Aquamarine", normal: 900, biomeMult: null},
 
-function pct(p){ return (p*100).toFixed(9)+'%'; }
-function cum(p,r){ return (1-Math.pow(1-p,r))*100; }
+    {name: "Divinus", normal: 32, biomeMult: null},
+    {name: "Crystallized", normal: 64, biomeMult: null},
+    {name: "Precious", normal: 1024, biomeMult: null},
+    {name: "Magnetic", normal: 2048, biomeMult: null},
+    {name: "Sidereum", normal: 4096, biomeMult: null},
 
-function calc(){
-  const sel = data.find(a => a.name === auraSelect.value);
-  const luck = parseFloat(document.getElementById('luck').value);
-  const rolls = parseInt(document.getElementById('rolls').value);
-  let out = '';
-  // native (non-BT)
-  if(sel.biomeMult){
-    const nativeR = sel.normal / sel.biomeMult;
-    const p = luck/nativeR;
-    out += `<p><strong>Native (non‑BT):</strong><br>1 in ${Math.round(nativeR).toLocaleString()}<br>Per‑roll: ${pct(p)}<br>Chance ≥1 in ${rolls.toLocaleString()} rolls: ${cum(p,rolls).toFixed(4)}%</p>`;
-  } else {
-    out += `<p><strong>Native (non‑BT):</strong> nil</p>`;
+    {name: "Flushed", normal: 6900, biomeMult: null},
+    {name: "Flushed: Lobotomy", normal: 69000, biomeMult: null},
+    {name: "Quartz", normal: 8192, biomeMult: null},
+
+    {name: "Forbidden", normal: 404, biomeMult: null},
+    {name: "Diaboli", normal: 1004, biomeMult: null},
+    {name: "Bleeding", normal: 4444, biomeMult: null},
+    {name: "Lost Soul", normal: 9200, biomeMult: null},
+    {name: "Undead", normal: 10000, biomeMult: 6},
+    {name: "Corrosive", normal: 12000, biomeMult: 5},
+    {name: "Hazard", normal: 7000, biomeMult: 5},
+    {name: "Hazard: Rays", normal: 70000, biomeMult: 5},
+    {name: "Rage", normal: 128, biomeMult: null},
+    {name: "Rage: Heated", normal: 12800, biomeMult: null},
+    {name: "Undead: Devil", normal: 100000, biomeMult: 6},
+    {name: "Diaboli: Void", normal: 100400, biomeMult: null},
+
+    {name: "Gilded", normal: 512, biomeMult: 4},
+    {name: "Ruby", normal: 350, biomeMult: null},
+    {name: "Jade", normal: 125000, biomeMult: null},
+    {name: "Bounded", normal: 200000, biomeMult: null},
+    {name: "Celestial", normal: 350000, biomeMult: null},
+    {name: "Sailor", normal: 12000000, biomeMult: 4},
+    {name: "Poseidon", normal: 3800000, biomeMult: 4},
+    {name: "Celestial Divine", normal: 7000000, biomeMult: null},
+    {name: "Exotic", normal: 99999, biomeMult: null},
+    {name: "Exotic: APEX", normal: 49999500, biomeMult: null},
+    {name: "Sailor: Flying Dutchman", normal: 80000000, biomeMult: 4},
+    {name: "Sovereign", normal: 750000000, biomeMult: null},
+    {name: "Aegis", normal: 825000000, biomeMult: null},
+    {name: "Abyssal Hunter", normal: 400000000, biomeMult: 4},
+
+    {name: "Comet", normal: 12000, biomeMult: 10},
+    {name: "Permafrost", normal: 73500, biomeMult: 3},
+    {name: "Stormal", normal: 90000, biomeMult: 3},
+    {name: "Galaxy", normal: 500000, biomeMult: 10},
+    {name: "Lunar: Full Moon", normal: 500000, biomeMult: 10},
+    {name: "Twilight", normal: 600000, biomeMult: 10},
+    {name: "Arcane", normal: 1000000, biomeMult: null},
+    {name: "Starscourge", normal: 1000000, biomeMult: 10},
+    {name: "Gravitational", normal: 2000000, biomeMult: null},
+    {name: "Bounded Unbounded", normal: 2000000, biomeMult: null},
+    {name: "Virtual", normal: 2500000, biomeMult: null},
+    {name: "Savior", normal: 3200000, biomeMult: null},
+    {name: "Solar: Solstice", normal: 5000000, biomeMult: 10},
+    {name: "Hades", normal: 6666666, biomeMult: 6},
+    {name: "HYPER‑VOLT", normal: 7500000, biomeMult: null},
+    {name: "Nihility", normal: 9000000, biomeMult: 1000},
+    {name: "Glitch", normal: 12210110, biomeMult: null},
+    {name: "Stormal Hurricane", normal: 13500000, biomeMult: null},
+    {name: "SIRIUS", normal: 14000000, biomeMult: null},
+    {name: "Arcane: Legacy", normal: 15000000, biomeMult: null},
+    {name: "Chromatic", normal: 20000000, biomeMult: null},
+    {name: "Arcane: Dark", normal: 30000000, biomeMult: null},
+    {name: "Ethereal", normal: 35000000, biomeMult: null},
+    {name: "Overseer", normal: 45000000, biomeMult: null},
+    {name: "Matrix", normal: 50000000, biomeMult: null},
+    {name: "Twilight: Iridescent Memory", normal: 60000000, biomeMult: 10},
+    {name: "Chromatic: GENESIS", normal: 99999999, biomeMult: null},
+    {name: "Starscourge: Radiant", normal: 100000000, biomeMult: 10},
+    {name: "Overture", normal: 150000000, biomeMult: null},
+    {name: "Symphony", normal: 175000000, biomeMult: null},
+    {name: "Impeached", normal: 200000000, biomeMult: null},
+    {name: "Oppression", normal: 220000000, biomeMult: null},
+    {name: "Archangel", normal: 250000000, biomeMult: null},
+    {name: "Overture: History", normal: 300000000, biomeMult: null},
+    {name: "Ruins", normal: 300000000, biomeMult: null},
+    {name: "Atlas", normal: 360000000, biomeMult: null},
+    {name: "Apostolos", normal: 444000000, biomeMult: null},
+    {name: "Gargantua", normal: 430000000, biomeMult: null},
+    {name: "Pixelation", normal: 1073741824, biomeMult: null},
+    {name: "Luminosity", normal: 1200000000, biomeMult: null},
+    {name: "Equinox", normal: 2500000000, biomeMult: null}
+  ];
+
+  // Rarity tier classification function
+  function getRarityTier(value) {
+    if (value >= 1 && value <= 999) return "Basic";
+    if (value >= 1000 && value <= 9999) return "Epic";
+    if (value >= 10000 && value <= 99998) return "Unique";
+    if (value >= 99999 && value <= 999999) return "Legendary";
+    if (value >= 1000000 && value <= 9999999) return "Mythical";
+    if (value >= 10000000 && value <= 99999998) return "Exalted";
+    if (value >= 99999999 && value <= 999999999) return "Glorious";
+    if (value >= 1000000000) return "Transcendent";
+    return "Unknown";
   }
-  // BT
-  const pbt = luck/sel.normal;
-  out += `<p><strong>Breakthrough (BT):</strong><br>1 in ${sel.normal.toLocaleString()}<br>Per‑roll: ${pct(pbt)}<br>Chance ≥1 in ${rolls.toLocaleString()} rolls: ${cum(pbt,rolls).toFixed(4)}%</p>`;
-  document.getElementById('result').innerHTML = out;
-}
+
+  // Calculate rolls needed for 99.9% chance
+  const TARGET_PROB = 0.999;
+  function rollsNeeded(chancePerRoll) {
+    if (chancePerRoll <= 0) return Infinity;
+    return Math.ceil(Math.log(1 - TARGET_PROB) / Math.log(1 - chancePerRoll));
+  }
+
+  // Build aura list in DOM sorted by rarity ascending
+  const auraListDiv = document.getElementById('auraList');
+
+  // Sort by rarity value ascending
+  auraData.sort((a, b) => a.normal - b.normal);
+
+  auraData.forEach(aura => {
+    const tier = getRarityTier(aura.normal);
+    const item = document.createElement('div');
+    item.className = 'aura-item';
+
+    // Title with rarity class for styling
+    const title = document.createElement('div');
+    title.textContent = aura.name + ` [${tier}]`;
+    title.className = tier;
+    item.appendChild(title);
+
+    // Placeholder for rolls info (calculated on button press)
+    const rollsInfo = document.createElement('div');
+    rollsInfo.className = 'rolls-info';
+    rollsInfo.textContent = 'Rolls needed: —';
+    item.appendChild(rollsInfo);
+
+    // Save biomeMult and normal on the item element for calculation later
+    item.dataset.normal = aura.normal;
+    item.dataset.biomeMult = aura.biomeMult;
+    item.dataset.tier = tier;
+
+    auraListDiv.appendChild(item);
+  });
+
+  // Calculate function on button click
+  function calculate() {
+    const luckInput = parseFloat(document.getElementById('luck').value);
+    const resultDiv = document.getElementById('result');
+    if (isNaN(luckInput) || luckInput <= 0) {
+      resultDiv.textContent = 'Please enter a valid positive luck value.';
+      return;
+    }
+    resultDiv.textContent = '';
+
+    // For each aura item, calculate rolls for non-BT and BT if biomeMult exists
+    const auraItems = auraListDiv.querySelectorAll('.aura-item');
+    auraItems.forEach(item => {
+      const rarityVal = parseFloat(item.dataset.normal);
+      const biomeMult = item.dataset.biomeMult ? parseFloat(item.dataset.biomeMult) : null;
+
+      // Chance per roll calculation:
+      // chance = luck / rarityVal  (non BT)
+      // BT chance = luck / (rarityVal / biomeMult) if biomeMult exists
+
+      const nativeChance = luckInput / rarityVal;
+      const nativeRolls = nativeChance > 0 ? rollsNeeded(nativeChance) : '∞';
+
+      let btRolls = 'N/A';
+      if (biomeMult && biomeMult > 0) {
+        const btChance = luckInput / (rarityVal / biomeMult);
+        btRolls = btChance > 0 ? rollsNeeded(btChance) : '∞';
+      }
+
+      const rollsText = biomeMult && biomeMult > 0
+        ? `Native Rolls: ${nativeRolls}, Breakthrough Rolls: ${btRolls}`
+        : `Rolls needed: ${nativeRolls}`;
+
+      item.querySelector('.rolls-info').textContent = rollsText;
+    });
+
+    resultDiv.textContent = 'Rolls calculation complete. Scroll down to see results for each aura.';
+  }
 </script>
+
 </body>
 </html>
