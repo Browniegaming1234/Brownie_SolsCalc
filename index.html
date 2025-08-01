@@ -110,9 +110,10 @@
     background: #121224;
   }
 
-  /* Custom Aura Fonts and Styles */
+  /* === Custom Aura Fonts and Styles === */
 
-  /* Example for other auras */
+  /* Example auras: add more below */
+
   .Divinus {
     font-family: 'Exo 2', sans-serif;
     color: #ffcc00;
@@ -124,6 +125,9 @@
     color: #e6e600;
     text-shadow: 0 0 6px #e6e600;
   }
+
+  /* Add more aura-specific styles here as needed */
+
 </style>
 </head>
 <body>
@@ -240,6 +244,7 @@
     {name: "Equinox", normal: 2500000000, biomeMult: null}
   ];
 
+  // You can keep this function if you want to show rarity tiers in text
   function getRarityTier(value) {
     if (value >= 1 && value <= 999) return "Basic";
     if (value >= 1000 && value <= 9999) return "Epic";
@@ -269,9 +274,9 @@
     const title = document.createElement('div');
     title.textContent = aura.name + ` [${tier}]`;
 
-    // Add both rarity class and aura name class
+    // Only add aura-specific class, no rarity tier class
     const auraClass = aura.name.replace(/[^a-zA-Z0-9]/g, '');
-    title.className = `${tier} ${auraClass}`;
+    title.className = auraClass;
 
     item.appendChild(title);
 
