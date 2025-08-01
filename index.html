@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sol’s RNG Aura Drop Calculator</title>
+  <style>
+    body { font-family: sans-serif; background: #fafafa; padding: 20px; }
+    label, input, select, button { display: block; margin: 10px 0; width: 300px; }
+    .result { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Sol’s RNG Aura Chance Calculator</h1>
+  <label>Aura:
+    <select id="aura"></select>
+  </label>
+  <label>Luck Multiplier:
+    <input id="luck" type="number" step="0.01" value="1.0">
+  </label>
+  <label>Rolls:
+    <input id="rolls" type="number" value="1000000">
+  </label>
+  <button onclick="calc()">Calculate</button>
+  <div id="result" class="result"></div>
+
+<script>
+// Rarity data ordered from easiest (common) to hardest (transcendent), using Era 9 values :contentReference[oaicite:2]{index=2}
+const data = [
+  {name: "Common",          normal: 2,       biomeMult: null},
+  {name: "Uncommon",        normal: 4,       biomeMult: null},
+  {name: "Good",            normal: 5,       biomeMult: null},
+  {name: "Natural",         normal: 8,       biomeMult: null},
+  {name: "Rare",            normal: 16,      biomeMult: null},
+  {name: "Divinus",         normal: 32,      biomeMult: null},
+  {name: "Crystallized",    normal: 64,      biomeMult: null},
+  {name: "Rage",            normal: 128,     biomeMult: null},
+  {name: "Topaz",           normal: 150,     biomeMult: null},
+  {name: "Ruby",            normal: 350,     biomeMult: null},
+  {name: "Forbidden",       normal: 404,     biomeMult: null},
+  {name: "Emerald",         normal: 500,     biomeMult: null},
+  {name: "Gilded",          normal: 512,     biomeMult: 4},
+  {name: "Ink",             normal: 700,     biomeMult: null},
+  {name: "Jackpot",         normal: 777,     biomeMult: null},
+  {name: "Sapphire",        normal: 800,     biomeMult: null},
+  {name: "Aquamarine",      normal: 900,     biomeMult: null},
+  {name: "Diaboli",         normal: 1004,    biomeMult: null},
+  {name: "Precious",        normal: 1024,    biomeMult: null},
+  {name: "Undefined",       normal: 1111,    biomeMult: 1000},
+  {name: "Glock",           normal: 1700,    biomeMult: null},
+  {name: "Magnetic",        normal: 2048,    biomeMult: null},
+  {name: "Ash",             normal: 2300,    biomeMult: null},
+  {name: "Player",          normal: 3000,    biomeMult: null},
+  {name: "Sidereum",        normal: 4096,    biomeMult: null},
+  {name: "Bleeding",        normal: 4444,    biomeMult: null},
+  {name: "Flushed",         normal: 6900,    biomeMult: null},
+  {name: "Hazard",          normal: 7000,    biomeMult: 5},
+  {name: "Quartz",          normal: 8192,    biomeMult: null},
+  {name: "Lost Soul",       normal: 9200,    biomeMult: null},
+  {name: "Undead",          normal: 10000,   biomeMult: 6},
+  {name: "Corrosive",       normal: 12000,   biomeMult: 5},
+  {name: "Comet",           normal: 12000,   biomeMult: 10},
+  {name: "Rage: Heated",    normal: 12800,   biomeMult: null},
+  {name: "Ink Leak",        normal: 14000,   biomeMult: null},
+  {name: "Powered",         normal: 16384,   biomeMult: null},
+  {name: "Permafrost",      normal: 73500,   biomeMult: 3},
+  {name: "Stormal",         normal: 90000,   biomeMult: 3},
+  {name: "Aquatic",         normal: 40000,   biomeMult: null},
+  {name: "Flushed: Lobotomy", normal: 69000, biomeMult: null},
+  {name: "Nautilus",        normal: 70000,   biomeMult: null},
+  {name: "Hazard: Rays",    normal: 70000,   biomeMult: 5},
+  {name: "Exotic",          normal: 99999,   biomeMult: null},
+  {name: "Undead: Devil",   normal: 100000,  biomeMult: 6},
+  {name: "Diaboli: Void",   normal: 100400,  biomeMult: null},
+  {name: "Jade",            normal: 125000,  biomeMult: null},
+  {name: "Bounded",         normal: 200000,  biomeMult: null},
+  {name: "Celestial",       normal: 350000,  biomeMult: null},
+  {name: "Galaxy",          normal: 500000,  biomeMult: 10},
+  {name: "Lunar: Full Moon",normal: 500000,  biomeMult: 10},
+  {name: "Twilight",        normal: 600000,  biomeMult: 10},
+  {name: "Kyawthuite",      normal: 850000,  biomeMult: null},
+  {name: "Arcane",          normal: 1000000, biomeMult: null},
+  {name: "Starscourge",     normal: 1000000, biomeMult: 10},
+  {name: "Magnetic: Reverse Polarity", normal: 1024000, biomeMult: null},
+  {name: "Gravitational",   normal: 2000000, biomeMult: null},
+  {name: "Bounded Unbounded", normal: 2000000, biomeMult: null},
+  {name: "Virtual",         normal: 2500000, biomeMult: null},
+  {name: "Sailor",          normal: 12000000, biomeMult: 4},
+  {name: "Savior",          normal: 3200000, biomeMult: null},
+  {name: "Poseidon",        normal: 3800000, biomeMult: 4},
+  {name: "Aquatic: Flame",  normal: 4000000, biomeMult: null},
+  {name: "Solar: Solstice", normal: 5000000, biomeMult: 10},
+  {name: "Hades",           normal: 6666666, biomeMult: 6},
+  {name: "Celestial Divine", normal: 7000000, biomeMult: null},
+  {name: "HYPER‑VOLT",      normal: 7500000, biomeMult: null},
+  {name: "Nihility",        normal: 9000000, biomeMult: 1000},
+  {name: "Glitch",          normal: 12210110, biomeMult: null},
+  {name: "Stormal Hurricane", normal: 13500000, biomeMult: null},
+  {name: "SIRIUS",          normal: 14000000, biomeMult: null},
+  {name: "Arcane: Legacy",  normal: 15000000, biomeMult: null},
+  {name: "Chromatic",       normal: 20000000, biomeMult: null},
+  {name: "Arcane: Dark",    normal: 30000000, biomeMult: null},
+  {name: "Ethereal",        normal: 35000000, biomeMult: null},
+  {name: "Overseer",        normal: 45000000, biomeMult: null},
+  {name: "Exotic: APEX",    normal: 49999500, biomeMult: null},
+  {name: "Matrix",          normal: 50000000, biomeMult: null},
+  {name: "Twilight: Iridescent Memory", normal: 60000000, biomeMult: 10},
+  {name: "Sailor: Flying Dutchman", normal: 80000000, biomeMult: 4},
+  {name: "Chromatic: GENESIS", normal: 99999999, biomeMult: null},
+  {name: "Starscourge: Radiant", normal: 100000000, biomeMult: 10},
+  {name: "Overture",        normal: 150000000, biomeMult: null},
+  {name: "Symphony",        normal: 175000000, biomeMult: null},
+  {name: "Impeached",       normal: 200000000, biomeMult: null},
+  {name: "Oppression",      normal: 220000000, biomeMult: null}, 
+  {name: "Archangel",       normal: 250000000, biomeMult: null},
+  {name: "Overture: History", normal: 300000000, biomeMult: null},
+  {name: "Ruins",           normal: 300000000, biomeMult: null},
+  {name: "Atlas",           normal: 360000000, biomeMult: null},
+  {name: "Abyssal Hunter",  normal: 400000000, biomeMult: 4},
+  {name: "Apostolos",       normal: 444000000, biomeMult: null},
+  {name: "Gargantua",       normal: 430000000, biomeMult: null},
+  {name: "Sovereign",       normal: 750000000, biomeMult: null},
+  {name: "Aegis",           normal: 825000000, biomeMult: null},
+  {name: "Luminosity",      normal: 1200000000, biomeMult: null},
+  {name: "Pixelation",      normal: 1073741824, biomeMult: null},
+  {name: "Equinox",         normal: 2500000000, biomeMult: null}
+];
+
+const auraSelect = document.getElementById('aura');
+data.forEach(a => {
+  const o = document.createElement('option');
+  o.value = a.name; o.textContent = a.name;
+  auraSelect.appendChild(o);
+});
+
+function pct(p){ return (p*100).toFixed(9)+'%'; }
+function cum(p,r){ return (1-Math.pow(1-p,r))*100; }
+
+function calc(){
+  const sel = data.find(a => a.name === auraSelect.value);
+  const luck = parseFloat(document.getElementById('luck').value);
+  const rolls = parseInt(document.getElementById('rolls').value);
+  let out = '';
+  // native (non-BT)
+  if(sel.biomeMult){
+    const nativeR = sel.normal / sel.biomeMult;
+    const p = luck/nativeR;
+    out += `<p><strong>Native (non‑BT):</strong><br>1 in ${Math.round(nativeR).toLocaleString()}<br>Per‑roll: ${pct(p)}<br>Chance ≥1 in ${rolls.toLocaleString()} rolls: ${cum(p,rolls).toFixed(4)}%</p>`;
+  } else {
+    out += `<p><strong>Native (non‑BT):</strong> nil</p>`;
+  }
+  // BT
+  const pbt = luck/sel.normal;
+  out += `<p><strong>Breakthrough (BT):</strong><br>1 in ${sel.normal.toLocaleString()}<br>Per‑roll: ${pct(pbt)}<br>Chance ≥1 in ${rolls.toLocaleString()} rolls: ${cum(pbt,rolls).toFixed(4)}%</p>`;
+  document.getElementById('result').innerHTML = out;
+}
+</script>
+</body>
+</html>
