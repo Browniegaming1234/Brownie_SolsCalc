@@ -77,7 +77,7 @@
       border-radius: 4px;
     }
 
-    /* Color styles (already included in your message) */
+    /* Aura-specific title colors / gradients – directly from Sol's RNG wiki */
     .Common { color: #ffffff; }
     .Uncommon { color: #90ee90; }
     .Natural { color: #00ff00; }
@@ -330,9 +330,9 @@
         if (bm && bm > 0) {
           const btChance = luck / (val / bm);
           const bt = btChance > 0 ? rollsNeeded(btChance) : '∞';
-          text = `Native Rolls: ${nativeRolls}, Breakthrough Rolls: ${bt}`;
+          text = Native Rolls: ${nativeRolls}, Breakthrough Rolls: ${bt};
         } else {
-          text = `Rolls needed: ${nativeRolls}`;
+          text = Rolls needed: ${nativeRolls};
         }
         item.querySelector('.rolls-info').textContent = text;
       });
