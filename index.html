@@ -230,7 +230,7 @@
       const biomeStr = aura.biomeMult !== null ? `[${formatNumber(aura.biomeMult)}]` : '[Nil]';
       const normalStr = formatNumber(aura.normal);
 
-      // This is the corrected title with commas in numbers
+      // Title with commas and biome multiplier info
       title.textContent = `${aura.name} [${normalStr}] ${biomeStr}`;
       title.style.fontWeight = 'bold';
 
@@ -263,18 +263,18 @@
       const biomeMultRaw = item.dataset.biomeMult;
       const biomeMult = biomeMultRaw === 'null' || biomeMultRaw === undefined ? null : parseFloat(biomeMultRaw);
 
-      // Calculate native chance safely
       let nativeChance = luck / normalDenom;
       if (!isFinite(nativeChance) || nativeChance <= 0) nativeChance = 0;
+      if (nativeChance > 1) nativeChance = 1; // clamp max chance to 1
 
       const nativeRolls = nativeChance > 0 ? rollsNeeded(nativeChance) : Infinity;
 
       let text = '';
 
       if (biomeMult !== null && biomeMult > 0) {
-        // Calculate breakthrough chance safely
         let btChance = luck / (normalDenom / biomeMult);
         if (!isFinite(btChance) || btChance <= 0) btChance = 0;
+        if (btChance > 1) btChance = 1; // clamp max chance to 1
 
         const btRolls = btChance > 0 ? rollsNeeded(btChance) : Infinity;
 
@@ -298,5 +298,6 @@
     }
   });
 </script>
+
 </body>
 </html>
