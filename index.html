@@ -194,21 +194,21 @@
     {name: "Dreamscape", normal: 1, biomeMult: 850000000},
     {name: "Pixelation", normal: 1073741824, biomeMult: null},
     {name: "Luminosity", normal: 1200000000, biomeMult: null},
-    {name: "Equinox", normal: 2500000000, biomeMult: null},
+    {name: "Equinox", normal: 2500000000, biomeMult: null}
   ];
 
-  // Sort auras by normal value ascending
+  // Helper to format numbers with commas
+  function formatNumber(num) {
+    return num.toLocaleString();
+  }
+
+  // Sort auras by normal ascending
   auraData.sort((a, b) => a.normal - b.normal);
 
   const auraListDiv = document.getElementById('auraList');
   const resultDiv = document.getElementById('result');
   const luckInput = document.getElementById('luck');
   const calculateBtn = document.getElementById('calculateBtn');
-
-  // Format number with commas
-  function formatNumber(num) {
-    return num.toLocaleString();
-  }
 
   // Calculate rolls needed for 99.9% chance given chance per roll
   function rollsNeeded(chance) {
@@ -217,7 +217,7 @@
     return Math.ceil(Math.log(1 - targetProb) / Math.log(1 - chance));
   }
 
-  // Create the aura list UI elements
+  // Create the aura list UI elements with formatted titles
   function createAuraList() {
     auraListDiv.innerHTML = '';
     auraData.forEach(aura => {
@@ -225,19 +225,19 @@
       item.className = 'aura-item';
 
       const title = document.createElement('div');
-      // Add normal and biomeMult in brackets
-      const biomeStr = aura.biomeMult ? ` [${aura.biomeMult}]` : '';
-      title.textContent = `${aura.name} [${formatNumber(aura.normal)}]${biomeStr}`;
+
+      // Format biome multiplier or show "Nil"
+      const biomeStr = aura.biomeMult !== null ? `[${formatNumber(aura.biomeMult)}]` : '[Nil]';
+      title.textContent = `${aura.name} [${formatNumber(aura.normal)}] ${biomeStr}`;
       title.style.fontWeight = 'bold';
 
       const rollsInfo = document.createElement('div');
       rollsInfo.className = 'rolls-info';
-      rollsInfo.textContent = ''; // initially empty
+      rollsInfo.textContent = ''; // empty initially
 
       item.appendChild(title);
       item.appendChild(rollsInfo);
 
-      // Store aura data on element for use in calculation
       item.dataset.normal = aura.normal;
       item.dataset.biomeMult = aura.biomeMult;
 
@@ -245,7 +245,7 @@
     });
   }
 
-  // Perform calculations and update UI
+  // Calculate and update rolls needed
   function calculate() {
     const luck = parseFloat(luckInput.value);
     if (isNaN(luck) || luck <= 0) {
@@ -280,10 +280,8 @@
   // Initialize aura list on page load
   createAuraList();
 
-  // Hook up button event listener
+  // Button and enter key trigger calculation
   calculateBtn.addEventListener('click', calculate);
-
-  // Also allow pressing Enter in input to calculate
   luckInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       calculate();
