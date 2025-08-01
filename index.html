@@ -91,6 +91,7 @@
   <div id="auraList"></div>
 
   <script>
+    // Aura data array
     const auraData = [
       {name: "Common", normal: 2, biomeMult: null},
       {name: "Uncommon", normal: 4, biomeMult: null},
@@ -191,41 +192,40 @@
       {name: "Equinox", normal: 2500000000, biomeMult: null}
     ];
 
+    // Sort auras by normal value ascending
+    auraData.sort((a, b) => a.normal - b.normal);
+
     const auraListDiv = document.getElementById('auraList');
     const resultDiv = document.getElementById('result');
     const luckInput = document.getElementById('luck');
     const calculateBtn = document.getElementById('calculateBtn');
 
-    // Sort auras ascending by 'normal' denominator for display order
-    auraData.sort((a, b) => a.normal - b.normal);
-
-    // Calculate number of rolls needed for 99.9% chance given chance per roll
+    // Calculate rolls needed for 99.9% chance given chance per roll
     function rollsNeeded(chance) {
       const targetProb = 0.999;
       if (chance <= 0) return Infinity;
       return Math.ceil(Math.log(1 - targetProb) / Math.log(1 - chance));
     }
 
-    // Create the aura list UI with name and empty rolls info
+    // Create the aura list UI elements
     function createAuraList() {
       auraListDiv.innerHTML = '';
       auraData.forEach(aura => {
         const item = document.createElement('div');
         item.className = 'aura-item';
 
-        // Use aura name as is (no special class for now)
         const title = document.createElement('div');
         title.textContent = aura.name;
         title.style.fontWeight = 'bold';
 
         const rollsInfo = document.createElement('div');
         rollsInfo.className = 'rolls-info';
-        rollsInfo.textContent = '';
+        rollsInfo.textContent = ''; // initially empty
 
         item.appendChild(title);
         item.appendChild(rollsInfo);
 
-        // Store data attributes for calculation
+        // Store aura data on element for use in calculation
         item.dataset.normal = aura.normal;
         item.dataset.biomeMult = aura.biomeMult;
 
@@ -233,7 +233,7 @@
       });
     }
 
-    // Calculate and display rolls info for each aura based on user luck input
+    // Perform calculations and update UI
     function calculate() {
       const luck = parseFloat(luckInput.value);
       if (isNaN(luck) || luck <= 0) {
@@ -243,34 +243,39 @@
       resultDiv.textContent = '';
 
       const auraItems = auraListDiv.querySelectorAll('.aura-item');
-
       auraItems.forEach(item => {
-        const normalChanceDenom = parseFloat(item.dataset.normal);
+        const normalDenom = parseFloat(item.dataset.normal);
         const biomeMult = item.dataset.biomeMult ? parseFloat(item.dataset.biomeMult) : null;
 
-        const nativeChance = luck / normalChanceDenom;
+        const nativeChance = luck / normalDenom;
         const nativeRolls = nativeChance > 0 ? rollsNeeded(nativeChance) : Infinity;
 
-        let rollsText;
+        let text = '';
+
         if (biomeMult && biomeMult > 0) {
-          const breakthroughChance = luck / (normalChanceDenom / biomeMult);
-          const breakthroughRolls = breakthroughChance > 0 ? rollsNeeded(breakthroughChance) : Infinity;
-          rollsText = `Native Rolls: ${nativeRolls.toLocaleString()}, Breakthrough Rolls: ${breakthroughRolls.toLocaleString()}`;
+          const btChance = luck / (normalDenom / biomeMult);
+          const btRolls = btChance > 0 ? rollsNeeded(btChance) : Infinity;
+
+          text = `Native Rolls: ${nativeRolls === Infinity ? '∞' : nativeRolls}, Breakthrough Rolls: ${btRolls === Infinity ? '∞' : btRolls}`;
         } else {
-          rollsText = `Rolls needed: ${nativeRolls.toLocaleString()}`;
+          text = `Rolls needed: ${nativeRolls === Infinity ? '∞' : nativeRolls}`;
         }
 
-        item.querySelector('.rolls-info').textContent = rollsText;
+        item.querySelector('.rolls-info').textContent = text;
       });
     }
 
-    // Initialize list on load
+    // Initialize aura list on page load
     createAuraList();
 
-    // Hook up event listeners
+    // Hook up button event listener
     calculateBtn.addEventListener('click', calculate);
-    luckInput.addEventListener('keypress', e => {
-      if (e.key === 'Enter') calculate();
+
+    // Also allow pressing Enter in input to calculate
+    luckInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        calculate();
+      }
     });
   </script>
 </body>
