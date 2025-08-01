@@ -14,8 +14,7 @@
       padding: 20px;
       min-height: 100vh;
     }
-    h1 {
-      font-size: 2.5rem;
+    h1, h2 {
       color: #00ffff;
       text-align: center;
     }
@@ -55,7 +54,7 @@
       min-height: 40px;
       font-weight: 600;
     }
-    #auraList {
+    #auraList, #limitedAuraList {
       margin-top: 30px;
       max-height: 600px;
       overflow-y: auto;
@@ -73,10 +72,12 @@
       color: #bbb;
       margin-top: 4px;
     }
-    #auraList::-webkit-scrollbar {
+    #auraList::-webkit-scrollbar,
+    #limitedAuraList::-webkit-scrollbar {
       width: 8px;
     }
-    #auraList::-webkit-scrollbar-thumb {
+    #auraList::-webkit-scrollbar-thumb,
+    #limitedAuraList::-webkit-scrollbar-thumb {
       background: #00cccc;
       border-radius: 4px;
     }
@@ -89,6 +90,9 @@
   <button id="calculateBtn">Calculate Rolls</button>
   <div id="result"></div>
   <div id="auraList"></div>
+  
+  <h2>Limited-Time Auras</h2>
+  <div id="limitedAuraList"></div>
 
   <script>
   // Get references to DOM elements
@@ -202,102 +206,100 @@
     {name: "Equinox", normal: 2500000000, biomeMult: null}
   ];
 
-  // Helper function to format numbers with commas
+    const limitedAuraData = [
+      {name: "Aegis : Watergun", normal: 825000000, biomeMult: 2}
+    ];
+
   function formatNumber(num) {
-    if (num === null || num === undefined || isNaN(num)) return 'Nil';
-    return num.toLocaleString();
-  }
-
-  // Create aura list UI elements
-  function createAuraList() {
-    auraListDiv.innerHTML = '';
-    auraData.forEach(aura => {
-      const item = document.createElement('div');
-      item.className = 'aura-item';
-
-      const title = document.createElement('div');
-
-      const biomeStr = aura.biomeMult !== null ? `[${formatNumber(aura.biomeMult)}]` : '[Nil]';
-      const normalStr = formatNumber(aura.normal);
-
-      title.textContent = `${aura.name} [${normalStr}] ${biomeStr}`;
-      title.style.fontWeight = 'bold';
-
-      const rollsInfo = document.createElement('div');
-      rollsInfo.className = 'rolls-info';
-      rollsInfo.textContent = '';
-
-      item.appendChild(title);
-      item.appendChild(rollsInfo);
-
-      item.dataset.normal = aura.normal;
-      item.dataset.biomeMult = aura.biomeMult;
-      item.dataset.biomeMultIsMultiplier = aura.biomeMultIsMultiplier || false;
-
-      auraListDiv.appendChild(item);
-    });
-  }
-
-  // Calculate rolls needed for 99.9% chance
-  function rollsNeeded(chance) {
-    const targetProb = 0.999;
-    if (!chance || chance <= 0) return Infinity;
-    return Math.ceil(Math.log(1 - targetProb) / Math.log(1 - chance));
-  }
-
-  // Calculate and update rolls needed
-  function calculate() {
-    const luck = parseFloat(luckInput.value);
-    if (isNaN(luck) || luck <= 0) {
-      alert('Please enter a valid luck value greater than 0.');
-      return;
+      if (num === null || num === undefined || isNaN(num)) return 'Nil';
+      return num.toLocaleString();
     }
 
-    const auraItems = auraListDiv.querySelectorAll('.aura-item');
-    auraItems.forEach(item => {
-      const normalDenom = parseFloat(item.dataset.normal);
-      const biomeMultRaw = item.dataset.biomeMult;
-      const biomeMult = biomeMultRaw === 'null' || biomeMultRaw === undefined ? null : parseFloat(biomeMultRaw);
+    function createAuraList(data, container) {
+      container.innerHTML = '';
+      data.forEach(aura => {
+        const item = document.createElement('div');
+        item.className = 'aura-item';
 
-      const biomeMultIsMultiplierRaw = item.dataset.biomeMultIsMultiplier;
-      const biomeMultIsMultiplier = biomeMultIsMultiplierRaw === 'true';
+        const title = document.createElement('div');
+        const biomeStr = aura.biomeMult !== null ? `[${formatNumber(aura.biomeMult)}]` : '[Nil]';
+        const normalStr = formatNumber(aura.normal);
 
-      // Native chance
-      let nativeChance = luck / normalDenom;
-      if (!isFinite(nativeChance) || nativeChance <= 0) nativeChance = 0;
+        title.textContent = `${aura.name} [${normalStr}] ${biomeStr}`;
+        title.style.fontWeight = 'bold';
 
-      const nativeRolls = nativeChance > 0 ? rollsNeeded(nativeChance) : Infinity;
+        const rollsInfo = document.createElement('div');
+        rollsInfo.className = 'rolls-info';
+        rollsInfo.textContent = '';
 
-      let text = '';
+        item.appendChild(title);
+        item.appendChild(rollsInfo);
 
-      if (biomeMult !== null && biomeMult > 0) {
-        // Breakthrough chance depends on biomeMultIsMultiplier
-        let btDenominator = biomeMultIsMultiplier ? (normalDenom / biomeMult) : (normalDenom * biomeMult);
-        let btChance = luck / btDenominator;
-        if (!isFinite(btChance) || btChance <= 0) btChance = 0;
+        item.dataset.normal = aura.normal;
+        item.dataset.biomeMult = aura.biomeMult;
+        item.dataset.biomeMultIsMultiplier = aura.biomeMultIsMultiplier || false;
 
-        const btRolls = btChance > 0 ? rollsNeeded(btChance) : Infinity;
+        container.appendChild(item);
+      });
+    }
 
-        text = `Native Rolls: ${nativeRolls === Infinity ? '∞' : formatNumber(nativeRolls)}, Breakthrough Rolls: ${btRolls === Infinity ? '∞' : formatNumber(btRolls)}`;
-      } else {
-        text = `Rolls needed: ${nativeRolls === Infinity ? '∞' : formatNumber(nativeRolls)}`;
+    function rollsNeeded(chance) {
+      const targetProb = 0.999;
+      if (!chance || chance <= 0) return Infinity;
+      return Math.ceil(Math.log(1 - targetProb) / Math.log(1 - chance));
+    }
+
+    function calculate() {
+      const luck = parseFloat(luckInput.value);
+      if (isNaN(luck) || luck <= 0) {
+        alert('Please enter a valid luck value greater than 0.');
+        return;
       }
 
-      item.querySelector('.rolls-info').textContent = text;
-    });
-  }
+      const allItems = [
+        ...auraListDiv.querySelectorAll('.aura-item'),
+        ...limitedAuraListDiv.querySelectorAll('.aura-item')
+      ];
 
-  // Initialize aura list on page load
-  createAuraList();
+      allItems.forEach(item => {
+        const normalDenom = parseFloat(item.dataset.normal);
+        const biomeMultRaw = item.dataset.biomeMult;
+        const biomeMult = biomeMultRaw === 'null' || biomeMultRaw === undefined ? null : parseFloat(biomeMultRaw);
+        const biomeMultIsMultiplier = item.dataset.biomeMultIsMultiplier === 'true';
 
-  // Set up event listeners
-  calculateBtn.addEventListener('click', calculate);
-  luckInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      calculate();
+        let nativeChance = luck / normalDenom;
+        if (!isFinite(nativeChance) || nativeChance <= 0) nativeChance = 0;
+
+        const nativeRolls = nativeChance > 0 ? rollsNeeded(nativeChance) : Infinity;
+        let text = '';
+
+        if (biomeMult !== null && biomeMult > 0) {
+          const btDenominator = biomeMultIsMultiplier ? (normalDenom / biomeMult) : (normalDenom * biomeMult);
+          let btChance = luck / btDenominator;
+          if (!isFinite(btChance) || btChance <= 0) btChance = 0;
+
+          const btRolls = btChance > 0 ? rollsNeeded(btChance) : Infinity;
+
+          text = `Native Rolls: ${nativeRolls === Infinity ? '∞' : formatNumber(nativeRolls)}, Breakthrough Rolls: ${btRolls === Infinity ? '∞' : formatNumber(btRolls)}`;
+        } else {
+          text = `Rolls needed: ${nativeRolls === Infinity ? '∞' : formatNumber(nativeRolls)}`;
+        }
+
+        item.querySelector('.rolls-info').textContent = text;
+      });
     }
-  });
-  </script>
 
+    // Initialize lists
+    createAuraList(auraData, auraListDiv);
+    createAuraList(limitedAuraData, limitedAuraListDiv);
+
+    // Event listeners
+    calculateBtn.addEventListener('click', calculate);
+    luckInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        calculate();
+      }
+    });
+  </script>
 </body>
 </html>
