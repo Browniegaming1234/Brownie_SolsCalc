@@ -80,106 +80,6 @@
       background: #00cccc;
       border-radius: 4px;
     }
-
-    /* Aura-specific title colors / gradients from Sol's RNG wiki */
-    .Common { color: #ffffff; }
-    .Uncommon { color: #90ee90; }
-    .Natural { color: #00ff00; }
-    .Good { color: #cccccc; }
-    .Ink { color: #000000; }
-    .Glock { color: #a9a9a9; }
-    .Ash { color: #000000; }
-    .Player { color: #ffffff; }
-    .Aquatic { color: #00bfff; }
-    .Nautilus { background: linear-gradient(90deg, #1e90ff, #06a0c6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .AquaticFlame { color: #ff8c00; }
-
-    .Emerald { color: #00a354; }
-    .Topaz { color: #985d19; }
-    .Jackpot { color: #ffea00; }
-    .Sapphire { color: #0f52ba; }
-    .Aquamarine { color: #7fffd4; }
-
-    .Divinus { color: #fff700; }
-    .Crystallized { color: #cf9fff; }
-    .Precious { color: #4169e1; }
-    .Magnetic { background: linear-gradient(90deg, #0000ff, #ff0000); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .Sidereum { background: linear-gradient(90deg, #da70d6, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-    .Flushed { color: #fff700; }
-    .FlushedLobotomy { color: #ff8c00; }
-    .Quartz { color: #ff1493; }
-
-    .Forbidden { color: #090925; }
-    .Diaboli { color: #db1a1a; }
-    .Bleeding { color: #ff0000; }
-    .LostSoul { color: #a880e8; }
-    .Undead { color: #739b00; }
-    .Corrosive { color: #7ac74f; }
-    .Hazard { background: linear-gradient(90deg, #8a2be2, #1e90ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .HazardRays { color: #1e90ff; }
-    .Rage { color: #dc143c; }
-    .RageHeated { color: #ff4500; }
-    .UndeadDevil { color: #d10c04; }
-    .DiaboliVoid { color: #9e1f0f; }
-
-    .Gilded { color: #ffac1c; }
-    .Ruby { color: #e10303; }
-    .Jade { color: #00a86b; }
-    .Bounded { color: #4169e1; }
-    .Celestial { background: linear-gradient(90deg, #add8e6, #cfb3f5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .Sailor { color: #00ccff; }
-    .Poseidon { color: #02a2b9; }
-    .CelestialDivine { color: #fbb03b; }
-    .Exotic { color: #000000; }
-    .ExoticAPEX { color: #000000; }
-    .SailorFlyingDutchman { color: #44ccff; }
-    .Sovereign { background: linear-gradient(90deg, #0000ff, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-    .Aegis { color: #4b6d99; }
-    .AbyssalHunter { color: #0b5f6f; }
-
-    .Comet { color: #ffffff; }
-    .Permafrost { color: #c5f2ff; }
-    .Stormal { color: #9bc3ff; }
-    .Galaxy { color: #ffffff; }
-    .LunarFullMoon { color: #ffd700; }
-    .Twilight { color: #8a2be2; }
-    .Arcane { color: #663399; }
-    .Starscourge { color: #dc143c; }
-    .Gravitational { color: #8a2be2; }
-    .BoundedUnbounded { color: #4169e1; }
-    .Virtual { color: #00ffff; }
-    .Savior { color: #e6e6fa; }
-    .SolarSolstice { color: #ffff00; }
-    .Hades { color: #ff8c00; }
-    .HYPERVOLT { color: #8a2be2; }
-    .Nihility { color: #a9a9a9; }
-    .Glitch { color: #000000; }
-    .StormalHurricane { color: #a9a9a9; }
-    .SIRIUS { color: #ffd700; }
-    .ArcaneLegacy { color: #663399; }
-    .Chromatic { color: #ff66cc; }
-    .ArcaneDark { color: #4b0082; }
-    .Ethereal { color: #eeeeee; }
-    .Overseer { color: #dda0dd; }
-    .Matrix { color: #00ffaa; }
-    .TwilightIridescentMemory { color: #ffffff; }
-    .ChromaticGenesis { color: #ccccff; }
-    .StarscourgeRadiant { color: #add8e6; }
-    .Overture { color: #4169e1; }
-    .Symphony { color: #add8e6; }
-    .Impeached { color: #8a2be2; }
-    .Oppression { color: #000000; }
-    .Archangel { color: #ffd700; }
-    .OvertureHistory { color: #4169e1; }
-    .Ruins { color: #7b7b7b; }
-    .Atlas { color: #2f4f4f; }
-    .Apostolos { color: #ffffff; }
-    .Gargantua { color: #696969; }
-    .Pixelation { color: #000000; }
-    .Luminosity { color: #add8e6; }
-    .Equinox { color: #ffffff; }
   </style>
 </head>
 <body>
@@ -313,11 +213,10 @@
         const item = document.createElement('div');
         item.className = 'aura-item';
 
-        // Class for styling - sanitize by removing spaces and special chars
-        const auraClass = aura.name.replace(/[^a-zA-Z0-9]/g, '');
+        // Use aura name as is (no special class for now)
         const title = document.createElement('div');
         title.textContent = aura.name;
-        title.className = auraClass;
+        title.style.fontWeight = 'bold';
 
         const rollsInfo = document.createElement('div');
         rollsInfo.className = 'rolls-info';
@@ -326,6 +225,7 @@
         item.appendChild(title);
         item.appendChild(rollsInfo);
 
+        // Store data attributes for calculation
         item.dataset.normal = aura.normal;
         item.dataset.biomeMult = aura.biomeMult;
 
@@ -367,10 +267,7 @@
     // Initialize list on load
     createAuraList();
 
-    // Make calculate globally accessible
-    window.calculate = calculate;
-
-    // Add event listeners
+    // Hook up event listeners
     calculateBtn.addEventListener('click', calculate);
     luckInput.addEventListener('keypress', e => {
       if (e.key === 'Enter') calculate();
