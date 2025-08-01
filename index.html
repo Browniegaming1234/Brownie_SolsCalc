@@ -197,8 +197,9 @@
     {name: "Equinox", normal: 2500000000, biomeMult: null}
   ];
 
-  // Helper to format numbers with commas
+  // Helper to format numbers with commas, handles null and NaN gracefully
   function formatNumber(num) {
+    if (num === null || num === undefined || isNaN(num)) return 'Nil';
     return num.toLocaleString();
   }
 
@@ -206,14 +207,13 @@
   auraData.sort((a, b) => a.normal - b.normal);
 
   const auraListDiv = document.getElementById('auraList');
-  const resultDiv = document.getElementById('result');
   const luckInput = document.getElementById('luck');
   const calculateBtn = document.getElementById('calculateBtn');
 
   // Calculate rolls needed for 99.9% chance given chance per roll
   function rollsNeeded(chance) {
     const targetProb = 0.999;
-    if (chance <= 0) return Infinity;
+    if (!chance || chance <= 0) return Infinity;
     return Math.ceil(Math.log(1 - targetProb) / Math.log(1 - chance));
   }
 
@@ -228,7 +228,10 @@
 
       // Format biome multiplier or show "Nil"
       const biomeStr = aura.biomeMult !== null ? `[${formatNumber(aura.biomeMult)}]` : '[Nil]';
-      title.textContent = `${aura.name} [${formatNumber(aura.normal)}] ${biomeStr}`;
+      const normalStr = formatNumber(aura.normal);
+
+      // This is the corrected title with commas in numbers
+      title.textContent = `${aura.name} [${normalStr}] ${biomeStr}`;
       title.style.fontWeight = 'bold';
 
       const rollsInfo = document.createElement('div');
@@ -238,6 +241,7 @@
       item.appendChild(title);
       item.appendChild(rollsInfo);
 
+      // Save normal and biomeMult as data attributes for easy retrieval
       item.dataset.normal = aura.normal;
       item.dataset.biomeMult = aura.biomeMult;
 
@@ -249,23 +253,29 @@
   function calculate() {
     const luck = parseFloat(luckInput.value);
     if (isNaN(luck) || luck <= 0) {
-      resultDiv.textContent = 'Please enter a valid luck value greater than 0.';
+      alert('Please enter a valid luck value greater than 0.');
       return;
     }
-    resultDiv.textContent = '';
 
     const auraItems = auraListDiv.querySelectorAll('.aura-item');
     auraItems.forEach(item => {
       const normalDenom = parseFloat(item.dataset.normal);
-      const biomeMult = item.dataset.biomeMult ? parseFloat(item.dataset.biomeMult) : null;
+      const biomeMultRaw = item.dataset.biomeMult;
+      const biomeMult = biomeMultRaw === 'null' || biomeMultRaw === undefined ? null : parseFloat(biomeMultRaw);
 
-      const nativeChance = luck / normalDenom;
+      // Calculate native chance safely
+      let nativeChance = luck / normalDenom;
+      if (!isFinite(nativeChance) || nativeChance <= 0) nativeChance = 0;
+
       const nativeRolls = nativeChance > 0 ? rollsNeeded(nativeChance) : Infinity;
 
       let text = '';
 
-      if (biomeMult && biomeMult > 0) {
-        const btChance = luck / (normalDenom / biomeMult);
+      if (biomeMult !== null && biomeMult > 0) {
+        // Calculate breakthrough chance safely
+        let btChance = luck / (normalDenom / biomeMult);
+        if (!isFinite(btChance) || btChance <= 0) btChance = 0;
+
         const btRolls = btChance > 0 ? rollsNeeded(btChance) : Infinity;
 
         text = `Native Rolls: ${nativeRolls === Infinity ? '∞' : formatNumber(nativeRolls)}, Breakthrough Rolls: ${btRolls === Infinity ? '∞' : formatNumber(btRolls)}`;
