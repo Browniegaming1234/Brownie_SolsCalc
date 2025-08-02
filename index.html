@@ -177,13 +177,21 @@
       style="width:64px; height:64px; vertical-align: middle; margin-right:8px;"
     >
     Sol's RNG Aura Calculator
-  </h1>
-  <label>Sol's RNG Calculator helps you estimate how many rolls it would take to obtain a specific aura in Sol's RNG, based on your current luck. Just input your luck and desired aura to see your odds and roll count!</label>
-  <label for="luck">Enter Your Luck:</label>
-  <input type="number" id="luck" placeholder="Your Luck" min="0" step="any" />
+  <h1 style="text-align: center;">Sol's RNG Calculator</h1>
+
+<div style="text-align: center;">
+  <p>
+    Sol's RNG Calculator helps you estimate how many rolls it would take to obtain a specific aura in Sol's RNG, based on your current luck. Just input your luck and desired aura to see your odds and roll count!
+  </p>
+
+  <label for="luck">Enter Your Luck:</label><br />
+  <input type="number" id="luck" placeholder="Your Luck" min="0" step="any" /><br /><br />
+
   <button id="calculateBtn">Calculate Rolls</button>
-  <div id="result"></div>
+
+  <div id="result" style="margin-top: 20px;"></div>
   <div id="auraList"></div>
+</div>
 
   <h2>Limited-Time Auras</h2>
   <div id="limitedAuraList"></div>
