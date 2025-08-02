@@ -222,25 +222,31 @@
         const biomeMult = biomeMultRaw !== '' ? parseFloat(biomeMultRaw) : null;
         const biomeMultIsMultiplier = item.dataset.biomeMultIsMultiplier === 'true';
 
-        let nativeChance = luck / normalDenom;
-        if (!isFinite(nativeChance) || nativeChance <= 0) nativeChance = 0;
-
-        const nativeRolls = nativeChance > 0 ? Math.ceil(1 / nativeChance) : Infinity;
-        let text = '';
+        let nativeDenom = normalDenom;
+        let btDenom = null;
 
         if (biomeMult !== null && biomeMult > 0) {
-          const btDenominator = biomeMultIsMultiplier
-  ? (normalDenom * biomeMult)
-  : (normalDenom / biomeMult);
+          if (biomeMultIsMultiplier) {
+            // biome makes BT harder
+            nativeDenom = normalDenom;
+            btDenom = normalDenom * biomeMult;
+          } else {
+            // biome makes Native easier
+            nativeDenom = normalDenom / biomeMult;
+            btDenom = normalDenom;
+          }
+        }
 
-          let btChance = luck / btDenominator;
-          if (!isFinite(btChance) || btChance <= 0) btChance = 0;
+        const nativeChance = luck / nativeDenom;
+        const nativeRolls = nativeChance > 0 ? Math.ceil(1 / nativeChance) : Infinity;
 
+        let text = `Rolls needed: ${nativeRolls === Infinity ? '∞' : formatNumber(nativeRolls)}`;
+
+        if (btDenom !== null) {
+          const btChance = luck / btDenom;
           const btRolls = btChance > 0 ? Math.ceil(1 / btChance) : Infinity;
 
-          text = `Native Rolls: ${nativeRolls === Infinity ? '∞' : formatNumber(nativeRolls)}, Breakthrough Rolls: ${btRolls === Infinity ? '∞' : formatNumber(btRolls)}`;
-        } else {
-          text = `Rolls needed: ${nativeRolls === Infinity ? '∞' : formatNumber(nativeRolls)}`;
+          text = `Native Rolls: ${formatNumber(nativeRolls)}, Breakthrough Rolls: ${formatNumber(btRolls)}`;
         }
 
         item.querySelector('.rolls-info').textContent = text;
