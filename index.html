@@ -196,8 +196,8 @@
         item.appendChild(title);
         item.appendChild(rollsInfo);
 
-        item.dataset.normal = aura.normal ?? '';
-        item.dataset.biomeMult = aura.biomeMult ?? '';
+        item.dataset.normal = aura.normal != null ? aura.normal.toString() : '';
+        item.dataset.biomeMult = aura.biomeMult != null ? aura.biomeMult.toString() : '';
         item.dataset.biomeMultIsMultiplier = aura.biomeMultIsMultiplier === true ? 'true' : 'false';
 
         container.appendChild(item);
