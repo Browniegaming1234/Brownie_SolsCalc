@@ -7,6 +7,7 @@
   <title>Sol's RNG Aura Calculator</title>
   <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@600&display=swap" rel="stylesheet" />
   <style>
+    /* Base styles */
     body {
       background: #0a0a12;
       color: #ddd;
@@ -14,10 +15,12 @@
       margin: 0;
       padding: 20px;
       min-height: 100vh;
+      overflow-x: hidden;
     }
     h1, h2 {
       color: #00ffff;
       text-align: center;
+      margin-bottom: 8px;
     }
     label, input, button {
       display: block;
@@ -31,6 +34,7 @@
       border: none;
       background: #22222a;
       color: #eee;
+      box-sizing: border-box;
     }
     button {
       padding: 12px;
@@ -42,6 +46,7 @@
       cursor: pointer;
       box-shadow: 0 0 10px #00ffff;
       transition: background 0.3s ease;
+      user-select: none;
     }
     button:hover {
       background: #00cccc;
@@ -61,6 +66,8 @@
       background: #121224;
       border: 1px solid #222;
       padding: 10px 0;
+      max-height: 350px;
+      overflow-y: auto;
     }
     .aura-item {
       padding: 10px 15px;
@@ -81,6 +88,84 @@
     #limboAuraList::-webkit-scrollbar-thumb {
       background: #00cccc;
       border-radius: 4px;
+    }
+
+    /* Update Log button */
+    #updateLogBtn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 120px;
+      padding: 10px 12px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      background: #00ffff;
+      color: #000;
+      border-radius: 8px;
+      box-shadow: 0 0 15px #00ffff;
+      cursor: pointer;
+      z-index: 1100;
+      user-select: none;
+      transition: background 0.3s ease;
+    }
+    #updateLogBtn:hover {
+      background: #00cccc;
+    }
+
+    /* Modal backdrop */
+    #modalBackdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(3px);
+      z-index: 1050;
+      display: none;
+    }
+
+    /* Modal content */
+    #updateLogModal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #121224;
+      border-radius: 12px;
+      padding: 25px 30px;
+      max-width: 90vw;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 0 30px #00ffff;
+      color: #ddd;
+      font-size: 1rem;
+      line-height: 1.4;
+      z-index: 1101;
+      display: none;
+    }
+    #updateLogModal h2 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #00ffff;
+      text-align: center;
+    }
+    #updateLogModal p {
+      margin-bottom: 10px;
+      white-space: pre-wrap;
+    }
+    #closeModalBtn {
+      display: block;
+      margin: 15px auto 0;
+      background: #00cccc;
+      color: #000;
+      font-weight: 700;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00cccc;
+      transition: background 0.3s ease;
+      user-select: none;
+    }
+    #closeModalBtn:hover {
+      background: #009999;
     }
   </style>
 </head>
@@ -105,20 +190,31 @@
 
   <h2>HEY!</h2>
   <label for="msg" class="centered-label">
-  Luck works differently in Limbo, so these results may not be accurate. However, if you input the correct luck value, the calculation should work perfectly fine!
+    Luck works differently in Limbo, so these results may not be accurate. However, if you input the correct luck value, the calculation should work perfectly fine!
   </label>
 
   <h2>Limbo-Auras</h2>
   <div id="limboAuraList"></div>
 
+  <button id="updateLogBtn" aria-label="Open Update Log">Update Log</button>
+
+  <div id="modalBackdrop" tabindex="-1"></div>
+
+  <section id="updateLogModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="0">
+    <h2 id="modalTitle">Update Log</h2>
+    <p>Version 1.0.0 - Initial release, Full Calculator! More auras added soon!</p>
+    <button id="closeModalBtn" aria-label="Close Update Log">Close</button>
+  </section>
+
   <script>
+
     const calculateBtn = document.getElementById('calculateBtn');
     const luckInput = document.getElementById('luck');
     const auraListDiv = document.getElementById('auraList');
     const limitedAuraListDiv = document.getElementById('limitedAuraList');
     const limboAuraListDiv = document.getElementById('limboAuraList');
 
-     // SCRIPT MADE BY BROWNIE!  //
+    // SCRIPT MADE BY BROWNIE!  //
     // ===== Biome Multis ===== //
           // snowy bt multi = 3 //
          // windy bt multi = 3 //
@@ -127,122 +223,122 @@
       // hell bt multi = 6 //
      // null bt multi = 1000 // 
     // rest (starfall, corruption) = 5 //
-    
+
     const auraData = [
-    // {name: "test_aura390", normal: 39000000, biomeMult: null}, // Testing aura to validate data; worked, so auras >1M added—Celestial/Bounded as their included for their own potions.
-    {name: "Bounded", normal: 200000, biomeMult: null},
-    {name: "Celestial", normal: 350000, biomeMult: null},
-    {name: "Arcane", normal: 1000000, biomeMult: null},
-    {name: "Magnetic : Reverse Polarity", normal: 1024000, biomeMult: null},
-    {name: "Undefined", normal: 1111000, biomeMult: null},
-    {name: "Rage : Brawler", normal: 1280000, biomeMult: null},
-    {name: "Astral", normal: 1336000, biomeMult: 5},
-    {name: "Cosmos", normal: 1520000, biomeMult: null},
-    {name: "Gravitational", normal: 2000000, biomeMult: null},
-    {name: "UNBOUND", normal: 2000000, biomeMult: null},
-    {name: "Virtual", normal: 2500000, biomeMult: null},
-    {name: "Parasite", normal: 3000000, biomeMult: null},
-    {name: "Savior", normal: 3200000, biomeMult: null},
-    {name: "Cosmos : Alice", normal: 3500000, biomeMult: null},
-    {name: "Aquatic: Flame", normal: 4000000, biomeMult: null},
-    {name: "Poseidon", normal: 4000000, biomeMult: 4},
-    {name: "Zues", normal: 4500000, biomeMult: null},
-    {name: "Solar: Solstice", normal: 5000000, biomeMult: 10},
-    {name: "Lunar: Full Moon", normal: 5000000, biomeMult: 10},
-    {name: "Galaxy", normal: 5000000, biomeMult: 10},
-    {name: "Twilight", normal: 6000000, biomeMult: 10},
-    {name: "Origin", normal: 6500000, biomeMult: null},
-    {name: "Hades", normal: 6666666, biomeMult: 6},
-    {name: "Celestial Divine", normal: 7000000, biomeMult: null},
-    {name: "Anubis", normal: 7200000, biomeMult: 4},
-    {name: "HYPER‑VOLT", normal: 7500000, biomeMult: null},
-    {name: "Velocity", normal: 7630000, biomeMult: null},
-    {name: "Harnessed", normal: 8500000, biomeMult: null},
-    {name: "Nihility", normal: 9000000, biomeMult: 1000},
-    {name: "Heilos", normal: 9000000, biomeMult: null},
-    {name: "Stargazer", normal: 9200000, biomeMult: 5},
-    {name: "Starscourge", normal: 1000000, biomeMult: 10},
-    {name: "Sailor", normal: 12000000, biomeMult: 4},
-    {name: "Glitch", normal: 1, biomeMult: 12210110, biomeMultIsMultiplier: true},
-    {name: "Stormal Hurricane", normal: 13500000, biomeMult: null},
-    {name: "SIRIUS", normal: 14000000, biomeMult: null},
-    {name: "Arcane: Legacy", normal: 15000000, biomeMult: null},
-    {name: "Lullaby", normal: 17000000, biomeMult: 10},
-    {name: "Chromatic", normal: 20000000, biomeMult: null},
-    {name: "Aviator", normal: 24000000, biomeMult: 3},
-    {name: "Blizzard", normal: 27315000, biomeMult: 3},
-    {name: "Arcane: Dark", normal: 30000000, biomeMult: null},
-    {name: "Ethereal", normal: 35000000, biomeMult: null},
-    {name: "Virtual : Fatal Error", normal: 40413000, biomeMult: null},
-    {name: "Overseer", normal: 45000000, biomeMult: null},
-    {name: "Exotic: APEX", normal: 49999500, biomeMult: null},
-    {name: "Matrix", normal: 50000000, biomeMult: null},
-    {name: "Runic", normal: 50000000, biomeMult: null},
-    {name: "Sentinel", normal: 60000000, biomeMult: null},
-    {name: "Twilight: Iridescent Memory", normal: 60000000, biomeMult: 10},
-    {name: "Sailor: Flying Dutchman", normal: 80000000, biomeMult: 4},
-    {name: "Carriage", normal: 80000000, biomeMult: null},
-    {name: "Chromatic: GENESIS", normal: 99999999, biomeMult: null},
-    {name: "Starscourge: Radiant", normal: 100000000, biomeMult: 10},
-    {name: "Overture", normal: 150000000, biomeMult: null},
-    {name: "Symphony", normal: 175000000, biomeMult: null},
-    {name: "Impeached", normal: 200000000, biomeMult: null},
-    {name: "Oppression", normal: 1, biomeMult: 220000000, biomeMultIsMultiplier: true},
-    {name: "Astral : Legendarium", normal: 267000000, biomeMult: 5},
-    {name: "Archangel", normal: 250000000, biomeMult: null},
-    {name: "Exotic : Void", normal: 299999999, biomeMult: null},
-    {name: "Overture: History", normal: 300000000, biomeMult: null},
-    {name: "Lotusfall", normal: 320000000, biomeMult: null},
-    {name: "Jazz : Orchestra", normal: 336870912, biomeMult: null},
-    {name: "Atlas", normal: 360000000, biomeMult: 4},
-    {name: "Abyssal Hunter", normal: 400000000, biomeMult: 4},
-    {name: "Apostolos", normal: 444000000, biomeMult: null},
-    {name: "Kyawthuite : Remembrance", normal: 450000000, biomeMult: null},
-    {name: "Gargantua", normal: 430000000, biomeMult: 5},
-    {name: "Ruins", normal: 500000000, biomeMult: null},
-    {name: "Matrix : Overdrive", normal: 503000000, biomeMult: null},
-    {name: "Matrix : Reality", normal: 601020102, biomeMult: null},
-    {name: "Sovereign", normal: 750000000, biomeMult: null},
-    {name: "Ruins : Withered", normal: 800000000, biomeMult: null},
-    {name: "Aegis", normal: 825000000, biomeMult: null},
-    {name: "Pixelation", normal: 1073741824, biomeMult: null},
-    {name: "Luminosity", normal: 1200000000, biomeMult: null},
-    {name: "Equinox", normal: 2500000000, biomeMult: null}
-  ];
+      // {name: "test_aura390", normal: 39000000, biomeMult: null}, // Testing aura to validate data; worked, so auras >1M added—Celestial/Bounded as their included for their own potions.
+      {name: "Bounded", normal: 200000, biomeMult: null},
+      {name: "Celestial", normal: 350000, biomeMult: null},
+      {name: "Arcane", normal: 1000000, biomeMult: null},
+      {name: "Magnetic : Reverse Polarity", normal: 1024000, biomeMult: null},
+      {name: "Undefined", normal: 1111000, biomeMult: null},
+      {name: "Rage : Brawler", normal: 1280000, biomeMult: null},
+      {name: "Astral", normal: 1336000, biomeMult: 5},
+      {name: "Cosmos", normal: 1520000, biomeMult: null},
+      {name: "Gravitational", normal: 2000000, biomeMult: null},
+      {name: "UNBOUND", normal: 2000000, biomeMult: null},
+      {name: "Virtual", normal: 2500000, biomeMult: null},
+      {name: "Parasite", normal: 3000000, biomeMult: null},
+      {name: "Savior", normal: 3200000, biomeMult: null},
+      {name: "Cosmos : Alice", normal: 3500000, biomeMult: null},
+      {name: "Aquatic: Flame", normal: 4000000, biomeMult: null},
+      {name: "Poseidon", normal: 4000000, biomeMult: 4},
+      {name: "Zues", normal: 4500000, biomeMult: null},
+      {name: "Solar: Solstice", normal: 5000000, biomeMult: 10},
+      {name: "Lunar: Full Moon", normal: 5000000, biomeMult: 10},
+      {name: "Galaxy", normal: 5000000, biomeMult: 10},
+      {name: "Twilight", normal: 6000000, biomeMult: 10},
+      {name: "Origin", normal: 6500000, biomeMult: null},
+      {name: "Hades", normal: 6666666, biomeMult: 6},
+      {name: "Celestial Divine", normal: 7000000, biomeMult: null},
+      {name: "Anubis", normal: 7200000, biomeMult: 4},
+      {name: "HYPER‑VOLT", normal: 7500000, biomeMult: null},
+      {name: "Velocity", normal: 7630000, biomeMult: null},
+      {name: "Harnessed", normal: 8500000, biomeMult: null},
+      {name: "Nihility", normal: 9000000, biomeMult: 1000},
+      {name: "Heilos", normal: 9000000, biomeMult: null},
+      {name: "Stargazer", normal: 9200000, biomeMult: 5},
+      {name: "Starscourge", normal: 1000000, biomeMult: 10},
+      {name: "Sailor", normal: 12000000, biomeMult: 4},
+      {name: "Glitch", normal: 1, biomeMult: 12210110, biomeMultIsMultiplier: true},
+      {name: "Stormal Hurricane", normal: 13500000, biomeMult: null},
+      {name: "SIRIUS", normal: 14000000, biomeMult: null},
+      {name: "Arcane: Legacy", normal: 15000000, biomeMult: null},
+      {name: "Lullaby", normal: 17000000, biomeMult: 10},
+      {name: "Chromatic", normal: 20000000, biomeMult: null},
+      {name: "Aviator", normal: 24000000, biomeMult: 3},
+      {name: "Blizzard", normal: 27315000, biomeMult: 3},
+      {name: "Arcane: Dark", normal: 30000000, biomeMult: null},
+      {name: "Ethereal", normal: 35000000, biomeMult: null},
+      {name: "Virtual : Fatal Error", normal: 40413000, biomeMult: null},
+      {name: "Overseer", normal: 45000000, biomeMult: null},
+      {name: "Exotic: APEX", normal: 49999500, biomeMult: null},
+      {name: "Matrix", normal: 50000000, biomeMult: null},
+      {name: "Runic", normal: 50000000, biomeMult: null},
+      {name: "Sentinel", normal: 60000000, biomeMult: null},
+      {name: "Twilight: Iridescent Memory", normal: 60000000, biomeMult: 10},
+      {name: "Sailor: Flying Dutchman", normal: 80000000, biomeMult: 4},
+      {name: "Carriage", normal: 80000000, biomeMult: null},
+      {name: "Chromatic: GENESIS", normal: 99999999, biomeMult: null},
+      {name: "Starscourge: Radiant", normal: 100000000, biomeMult: 10},
+      {name: "Overture", normal: 150000000, biomeMult: null},
+      {name: "Symphony", normal: 175000000, biomeMult: null},
+      {name: "Impeached", normal: 200000000, biomeMult: null},
+      {name: "Oppression", normal: 1, biomeMult: 220000000, biomeMultIsMultiplier: true},
+      {name: "Astral : Legendarium", normal: 267000000, biomeMult: 5},
+      {name: "Archangel", normal: 250000000, biomeMult: null},
+      {name: "Exotic : Void", normal: 299999999, biomeMult: null},
+      {name: "Overture: History", normal: 300000000, biomeMult: null},
+      {name: "Lotusfall", normal: 320000000, biomeMult: null},
+      {name: "Jazz : Orchestra", normal: 336870912, biomeMult: null},
+      {name: "Atlas", normal: 360000000, biomeMult: 4},
+      {name: "Abyssal Hunter", normal: 400000000, biomeMult: 4},
+      {name: "Apostolos", normal: 444000000, biomeMult: null},
+      {name: "Kyawthuite : Remembrance", normal: 450000000, biomeMult: null},
+      {name: "Gargantua", normal: 430000000, biomeMult: 5},
+      {name: "Ruins", normal: 500000000, biomeMult: null},
+      {name: "Matrix : Overdrive", normal: 503000000, biomeMult: null},
+      {name: "Matrix : Reality", normal: 601020102, biomeMult: null},
+      {name: "Sovereign", normal: 750000000, biomeMult: null},
+      {name: "Ruins : Withered", normal: 800000000, biomeMult: null},
+      {name: "Aegis", normal: 825000000, biomeMult: null},
+      {name: "Pixelation", normal: 1073741824, biomeMult: null},
+      {name: "Luminosity", normal: 1200000000, biomeMult: null},
+      {name: "Equinox", normal: 2500000000, biomeMult: null}
+    ];
     const limitedAuraData = [     
-    {name: "Defined", normal: 2222222, biomeMult: 1000},
-    {name: "Kromat1kKromat1k", normal: 40000000, biomeMult: null},
-    {name: "Impeached : Im'peached", normal: 400000000, biomeMult: null},
-    {name: "Shard Surfer", normal: 225000000, biomeMult: null},
-    {name: "Innovator", normal: 30000000, biomeMult: null},
-    {name: "Lunar : NightFall", normal: 3000000, biomeMult: null},
-    {name: "Vital", normal: 6000000, biomeMult: null},
-    {name: "MoonFlower", normal: 10000000, biomeMult: null},
-    {name: "Cryptfire", normal: 21000000, biomeMult: null},
-    {name: "Soul Hunter", normal: 40000000, biomeMult: null},
-    {name: "Dullahan", normal: 72000000, biomeMult: null},
-    {name: "Nightmare Sky", normal: 190000000, biomeMult: null},
-    {name: "Harvester", normal: 666000000, biomeMult: null},
-    {name: "Apostolos : Veil", normal: 800000000, biomeMult: null},
-    {name: "Wonderland", normal: 12000000, biomeMult: null},
-    {name: "Santa Frost", normal: 15000000, biomeMult: null},
-    {name: "Winter Fantasy", normal: 72000000, biomeMult: null},
-    {name: "Express", normal: 90000000, biomeMult: null},
-    {name: "Abominable", normal: 120000000, biomeMult: 3},
-    {name: "Atlas : Yuletide", normal: 510000000, biomeMult: 3},
-    {name: "Flushed : Troll", normal: 1000000, biomeMult: null},
-    {name: "Origin : Onion", normal: 8000000, biomeMult: null},
-    {name: "Glock : Glock Of The Sky", normal: 170000000, biomeMult: null},
-    {name: "Manta", normal: 300000000, biomeMult: 2},
-    {name: "Aegis : Watergun", normal: 825000000, biomeMult: 2}
+      {name: "Defined", normal: 2222222, biomeMult: 1000},
+      {name: "Kromat1kKromat1k", normal: 40000000, biomeMult: null},
+      {name: "Impeached : Im'peached", normal: 400000000, biomeMult: null},
+      {name: "Shard Surfer", normal: 225000000, biomeMult: null},
+      {name: "Innovator", normal: 30000000, biomeMult: null},
+      {name: "Lunar : NightFall", normal: 3000000, biomeMult: null},
+      {name: "Vital", normal: 6000000, biomeMult: null},
+      {name: "MoonFlower", normal: 10000000, biomeMult: null},
+      {name: "Cryptfire", normal: 21000000, biomeMult: null},
+      {name: "Soul Hunter", normal: 40000000, biomeMult: null},
+      {name: "Dullahan", normal: 72000000, biomeMult: null},
+      {name: "Nightmare Sky", normal: 190000000, biomeMult: null},
+      {name: "Harvester", normal: 666000000, biomeMult: null},
+      {name: "Apostolos : Veil", normal: 800000000, biomeMult: null},
+      {name: "Wonderland", normal: 12000000, biomeMult: null},
+      {name: "Santa Frost", normal: 15000000, biomeMult: null},
+      {name: "Winter Fantasy", normal: 72000000, biomeMult: null},
+      {name: "Express", normal: 90000000, biomeMult: null},
+      {name: "Abominable", normal: 120000000, biomeMult: 3},
+      {name: "Atlas : Yuletide", normal: 510000000, biomeMult: 3},
+      {name: "Flushed : Troll", normal: 1000000, biomeMult: null},
+      {name: "Origin : Onion", normal: 8000000, biomeMult: null},
+      {name: "Glock : Glock Of The Sky", normal: 170000000, biomeMult: null},
+      {name: "Manta", normal: 300000000, biomeMult: 2},
+      {name: "Aegis : Watergun", normal: 825000000, biomeMult: 2}
     ];
     const limboAuraList = [
-    {name: "Anima", normal: 5730000, biomeMult: null},
-    {name: "Juxtaposition", normal: 40440400, biomeMult: null},
-    {name: "Unknown", normal: 444444444, biomeMult: null},
-    {name: "Elude", normal: 555555555, biomeMult: null},
-    {name: "Prologue", normal: 666616111, biomeMult: null},
-    {name: "Dreamscape", normal: 850000000, biomeMult: null},
+      {name: "Anima", normal: 5730000, biomeMult: null},
+      {name: "Juxtaposition", normal: 40440400, biomeMult: null},
+      {name: "Unknown", normal: 444444444, biomeMult: null},
+      {name: "Elude", normal: 555555555, biomeMult: null},
+      {name: "Prologue", normal: 666616111, biomeMult: null},
+      {name: "Dreamscape", normal: 850000000, biomeMult: null},
     ];
 
     function formatNumber(num) {
@@ -324,17 +420,45 @@
       });
     }
 
-    // Create aura lists on page load
-window.addEventListener('DOMContentLoaded', () => {
-  createAuraList(auraData, auraListDiv);
-  createAuraList(limitedAuraData, limitedAuraListDiv);
-  createAuraList(limboAuraList, limboAuraListDiv);
-});
+    window.addEventListener('DOMContentLoaded', () => {
+      createAuraList(auraData, auraListDiv);
+      createAuraList(limitedAuraData, limitedAuraListDiv);
+      createAuraList(limboAuraList, limboAuraListDiv);
+    });
 
-calculateBtn.addEventListener('click', calculate);
-luckInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') calculate();
-});
+    calculateBtn.addEventListener('click', calculate);
+    luckInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') calculate();
+    });
+
+    const updateLogBtn = document.getElementById('updateLogBtn');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const updateLogModal = document.getElementById('updateLogModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    function openModal() {
+      modalBackdrop.style.display = 'block';
+      updateLogModal.style.display = 'block';
+      updateLogModal.focus();
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modalBackdrop.style.display = 'none';
+      updateLogModal.style.display = 'none';
+      document.body.style.overflow = '';
+      updateLogBtn.focus();
+    }
+
+    updateLogBtn.addEventListener('click', openModal);
+    closeModalBtn.addEventListener('click', closeModal);
+    modalBackdrop.addEventListener('click', closeModal);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modalBackdrop.style.display === 'block') {
+        closeModal();
+      }
+    });
   </script>
 </body>
 </html>
