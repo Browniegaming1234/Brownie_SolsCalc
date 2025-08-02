@@ -88,7 +88,7 @@
   <button id="calculateBtn">Calculate Rolls</button>
   <div id="result"></div>
   <div id="auraList"></div>
-  
+
   <h2>Limited-Time Auras</h2>
   <div id="limitedAuraList"></div>
 
@@ -203,9 +203,8 @@
     {name: "Luminosity", normal: 1200000000, biomeMult: null},
     {name: "Equinox", normal: 2500000000, biomeMult: null}
   ];
-
     const limitedAuraData = [
-      {name: "Aegis : Watergun", normal: 825000000, biomeMult: 2}
+      { name: "Aegis : Watergun", normal: 825000000, biomeMult: 2 }
     ];
 
     function formatNumber(num) {
@@ -220,7 +219,7 @@
         item.className = 'aura-item';
 
         const title = document.createElement('div');
-        const biomeStr = aura.biomeMult !== null ? `[${formatNumber(aura.biomeMult)}]` : '[Nil]';
+        const biomeStr = aura.biomeMult !== null && aura.biomeMult !== undefined ? `[${formatNumber(aura.biomeMult)}]` : '[Nil]';
         const normalStr = formatNumber(aura.normal);
 
         title.textContent = `${aura.name} [${normalStr}] ${biomeStr}`;
@@ -233,9 +232,9 @@
         item.appendChild(title);
         item.appendChild(rollsInfo);
 
-        item.dataset.normal = aura.normal;
-        item.dataset.biomeMult = aura.biomeMult;
-        item.dataset.biomeMultIsMultiplier = aura.biomeMultIsMultiplier || false;
+        item.dataset.normal = aura.normal ?? '';
+        item.dataset.biomeMult = aura.biomeMult ?? '';
+        item.dataset.biomeMultIsMultiplier = aura.biomeMultIsMultiplier === true ? 'true' : 'false';
 
         container.appendChild(item);
       });
@@ -256,7 +255,7 @@
       allItems.forEach(item => {
         const normalDenom = parseFloat(item.dataset.normal);
         const biomeMultRaw = item.dataset.biomeMult;
-        const biomeMult = biomeMultRaw === 'null' || biomeMultRaw === undefined ? null : parseFloat(biomeMultRaw);
+        const biomeMult = biomeMultRaw !== '' ? parseFloat(biomeMultRaw) : null;
         const biomeMultIsMultiplier = item.dataset.biomeMultIsMultiplier === 'true';
 
         let nativeChance = luck / normalDenom;
@@ -286,9 +285,7 @@
 
     calculateBtn.addEventListener('click', calculate);
     luckInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        calculate();
-      }
+      if (e.key === 'Enter') calculate();
     });
   </script>
 </body>
