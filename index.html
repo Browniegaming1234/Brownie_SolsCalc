@@ -72,33 +72,28 @@
       margin-top: 4px;
     }
     #auraList::-webkit-scrollbar,
-    #limitedAuraList::-webkit-scrollbar {
+    #limitedAuraList::-webkit-scrollbar,
+    #limboAuraList::-webkit-scrollbar {
       width: 8px;
     }
     #auraList::-webkit-scrollbar-thumb,
-    #limitedAuraList::-webkit-scrollbar-thumb {
+    #limitedAuraList::-webkit-scrollbar-thumb,
+    #limboAuraList::-webkit-scrollbar-thumb {
       background: #00cccc;
       border-radius: 4px;
     }
-    #limboAuraList::-webkit-scrollbar {
-  width: 8px;
-}
-#limboAuraList::-webkit-scrollbar-thumb {
-  background: #00cccc;
-  border-radius: 4px;
-}
   </style>
 </head>
 <body>
   <h1>
-  <img 
-    src="https://raw.githubusercontent.com/Browniegaming1234/SolsCalc_Test/main/ico.png" 
-    alt="Logo" 
-    style="width:64px; height:64px; vertical-align: middle; margin-right:8px;"
-  >
-  Sol's RNG Aura Calculator
+    <img 
+      src="https://raw.githubusercontent.com/Browniegaming1234/SolsCalc_Test/main/ico.png" 
+      alt="Logo" 
+      style="width:64px; height:64px; vertical-align: middle; margin-right:8px;"
+    >
+    Sol's RNG Aura Calculator
   </h1>
-  <label for="">Sol's RNG Calculator helps you estimate how many rolls it would take to obtain a specific aura in Sol's RNG, based on your current luck. Just input your luck and desired aura to see your odds and roll count!</label>
+  <label>Sol's RNG Calculator helps you estimate how many rolls it would take to obtain a specific aura in Sol's RNG, based on your current luck. Just input your luck and desired aura to see your odds and roll count!</label>
   <label for="luck">Enter Your Luck:</label>
   <input type="number" id="luck" placeholder="Your Luck" min="0" step="any" />
   <button id="calculateBtn">Calculate Rolls</button>
@@ -110,10 +105,10 @@
 
   <h2>HEY!</h2>
   <label for="msg">Luck works differently in Limbo, so these results may not be accurate. However, if you input the correct luck value, the calculation should work perfectly fine!</label>
-  
+
   <h2>Limbo-Auras</h2>
   <div id="limboAuraList"></div>
-  
+
   <script>
     const calculateBtn = document.getElementById('calculateBtn');
     const luckInput = document.getElementById('luck');
@@ -121,7 +116,7 @@
     const limitedAuraListDiv = document.getElementById('limitedAuraList');
     const limboAuraListDiv = document.getElementById('limboAuraList');
 
-    // snowy bt multi = 3
+     // snowy bt multi = 3
     // windy bt multi = 3
     // rainy bt multi = 4
     // sandstorm bt multi = 4
@@ -258,7 +253,6 @@
         const title = document.createElement('div');
         const biomeStr = aura.biomeMult !== null && aura.biomeMult !== undefined ? `[${formatNumber(aura.biomeMult)}]` : '[Nil]';
         const normalStr = formatNumber(aura.normal);
-
         title.textContent = `${aura.name} [${normalStr}] ${biomeStr}`;
         title.style.fontWeight = 'bold';
 
@@ -285,10 +279,10 @@
       }
 
       const allItems = [
-  ...auraListDiv.querySelectorAll('.aura-item'),
-  ...limitedAuraListDiv.querySelectorAll('.aura-item'),
-  ...limboAuraListDiv.querySelectorAll('.aura-item')
-];
+        ...auraListDiv.querySelectorAll('.aura-item'),
+        ...limitedAuraListDiv.querySelectorAll('.aura-item'),
+        ...limboAuraListDiv.querySelectorAll('.aura-item')
+      ];
 
       allItems.forEach(item => {
         const normalDenom = parseFloat(item.dataset.normal);
@@ -301,11 +295,9 @@
 
         if (biomeMult !== null && biomeMult > 0) {
           if (biomeMultIsMultiplier) {
-            // biome makes BT harder
             nativeDenom = normalDenom;
             btDenom = normalDenom * biomeMult;
           } else {
-            // biome makes Native easier
             nativeDenom = normalDenom / biomeMult;
             btDenom = normalDenom;
           }
@@ -319,7 +311,6 @@
         if (btDenom !== null) {
           const btChance = luck / btDenom;
           const btRolls = btChance > 0 ? Math.ceil(1 / btChance) : Infinity;
-
           text = `Native Rolls: ${formatNumber(nativeRolls)}, Breakthrough Rolls: ${formatNumber(btRolls)}`;
         }
 
@@ -335,8 +326,6 @@
     luckInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') calculate();
     });
-
-    // awesome script I must say!
   </script>
 </body>
 </html>
