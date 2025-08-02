@@ -318,14 +318,17 @@
       });
     }
 
-    createAuraList(auraData, auraListDiv);
-    createAuraList(limitedAuraData, limitedAuraListDiv);
-    createAuraList(limboAuraList, limboAuraListDiv);
+    // Create aura lists on page load
+window.addEventListener('DOMContentLoaded', () => {
+  createAuraList(auraData, auraListDiv);
+  createAuraList(limitedAuraData, limitedAuraListDiv);
+  createAuraList(limboAuraList, limboAuraListDiv);
+});
 
-    calculateBtn.addEventListener('click', calculate);
-    luckInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') calculate();
-    });
+calculateBtn.addEventListener('click', calculate);
+luckInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') calculate();
+});
   </script>
 </body>
 </html>
