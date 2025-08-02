@@ -108,9 +108,12 @@
   <h2>Limited-Time Auras</h2>
   <div id="limitedAuraList"></div>
 
+  <h2>HEY!</h2>
+  <label for="msg">Luck works differently in Limbo, so these results may not be accurate. However, if you input the correct luck value, the calculation should work perfectly fine!</label>
+  
   <h2>Limbo-Auras</h2>
   <div id="limboAuraList"></div>
-
+  
   <script>
     const calculateBtn = document.getElementById('calculateBtn');
     const luckInput = document.getElementById('luck');
@@ -118,36 +121,65 @@
     const limitedAuraListDiv = document.getElementById('limitedAuraList');
     const limboAuraListDiv = document.getElementById('limboAuraList');
 
+    // snowy bt multi = 3
+    // windy bt multi = 3
+    // rainy bt multi = 4
+    // sandstorm bt multi = 4
+    // hell bt multi = 6
+    // null bt mult = 1000
+    // rest (starfall, corruption) = 5
+    
     const auraData = [
+    {name: "test_aura390", normal: 39000000, biomeMult: null},
     {name: "Bounded", normal: 200000, biomeMult: null},
     {name: "Celestial", normal: 350000, biomeMult: null},
     {name: "Arcane", normal: 1000000, biomeMult: null},
+    {name: "Magnetic : Reverse Polarity", normal: 1024000, biomeMult: null},
+    {name: "Undefined", normal: 1111000, biomeMult: null},
+    {name: "Rage : Brawler", normal: 1280000, biomeMult: null},
+    {name: "Astral", normal: 1336000, biomeMult: 5},
+    {name: "Cosmos", normal: 1520000, biomeMult: null},
     {name: "Gravitational", normal: 2000000, biomeMult: null},
     {name: "UNBOUND", normal: 2000000, biomeMult: null},
     {name: "Virtual", normal: 2500000, biomeMult: null},
+    {name: "Parasite", normal: 3000000, biomeMult: null},
     {name: "Savior", normal: 3200000, biomeMult: null},
+    {name: "Cosmos : Alice", normal: 3500000, biomeMult: null},
     {name: "Aquatic: Flame", normal: 4000000, biomeMult: null},
     {name: "Poseidon", normal: 4000000, biomeMult: 4},
+    {name: "Zues", normal: 4500000, biomeMult: null},
     {name: "Solar: Solstice", normal: 5000000, biomeMult: 10},
     {name: "Lunar: Full Moon", normal: 5000000, biomeMult: 10},
     {name: "Galaxy", normal: 5000000, biomeMult: 10},
     {name: "Twilight", normal: 6000000, biomeMult: 10},
+    {name: "Origin", normal: 6500000, biomeMult: null},
     {name: "Hades", normal: 6666666, biomeMult: 6},
     {name: "Celestial Divine", normal: 7000000, biomeMult: null},
+    {name: "Anubis", normal: 7200000, biomeMult: 4},
     {name: "HYPER‑VOLT", normal: 7500000, biomeMult: null},
+    {name: "Velocity", normal: 7630000, biomeMult: null},
+    {name: "Harnessed", normal: 8500000, biomeMult: null},
     {name: "Nihility", normal: 9000000, biomeMult: 1000},
+    {name: "Heilos", normal: 9000000, biomeMult: null},
+    {name: "Stargazer", normal, 9200000, biomeMult: 5},
     {name: "Starscourge", normal: 1000000, biomeMult: 10},
     {name: "Sailor", normal: 12000000, biomeMult: 4},
     {name: "Glitch", normal: 1, biomeMult: 12210110, biomeMultIsMultiplier: true},
     {name: "Stormal Hurricane", normal: 13500000, biomeMult: null},
     {name: "SIRIUS", normal: 14000000, biomeMult: null},
     {name: "Arcane: Legacy", normal: 15000000, biomeMult: null},
+    {name: "Lullaby", normal: 17000000, biomeMult: 10},
     {name: "Chromatic", normal: 20000000, biomeMult: null},
+    {name: "Aviator", normal: 24000000, biomeMult: 3},
+    {name: "Blizzard", normal: 27315000, biomeMult: 3},
     {name: "Arcane: Dark", normal: 30000000, biomeMult: null},
     {name: "Ethereal", normal: 35000000, biomeMult: null},
+    {name: "Virtual : Fatal Error", normal: 40413000, biomeMult: null},
     {name: "Overseer", normal: 45000000, biomeMult: null},
     {name: "Exotic: APEX", normal: 49999500, biomeMult: null},
     {name: "Matrix", normal: 50000000, biomeMult: null},
+    {name: "Runic", normal: 50000000, biomeMult: null},
+    {name: "Sentinel", normal: 60000000, biomeMult: null},
     {name: "Twilight: Iridescent Memory", normal: 60000000, biomeMult: 10},
     {name: "Sailor: Flying Dutchman", normal: 80000000, biomeMult: 4},
     {name: "Carriage", normal: 80000000, biomeMult: null},
@@ -179,14 +211,34 @@
     {name: "Equinox", normal: 2500000000, biomeMult: null}
   ];
     const limitedAuraData = [     
-  {name: "Impeached : Im'peached", normal: 400000000, biomeMult: 0},
-  {name: "Abominable", normal: 120000000, biomeMult: 3},
-  {name: "Atlas : Yuletide", normal: 510000000, biomeMult: 3},
-  {name: "Glock : Glock Of The Sky", normal: 170000000, biomeMult: null},
-  {name: "Manta", normal: 300000000, biomeMult: 2},
-  {name: "Aegis : Watergun", normal: 825000000, biomeMult: 2}
+    {name: "Defined", normal: 2222222, biomeMult: 1000},
+    {name: "Kromat1kKromat1k", normal: 40000000, biomeMult: null},
+    {name: "Impeached : Im'peached", normal: 400000000, biomeMult: null},
+    {name: "Shard Surfer", normal: 225000000, biomeMult: null},
+    {name: "Innovator", normal: 30000000, biomeMult: null},
+    {name: "Lunar : NightFall", normal: 3000000, biomeMult: null},
+    {name: "Vital", normal: 6000000, biomeMult: null},
+    {name: "MoonFlower", normal: 10000000, biomeMult: null},
+    {name: "Cryptfire", normal: 21000000, biomeMult: null},
+    {name: "Soul Hunter", normal: 40000000, biomeMult: null},
+    {name: "Dullahan", normal: 72000000, biomeMult: null},
+    {name: "Nightmare Sky", normal: 190000000, biomeMult: null},
+    {name: "Harvester", normal: 666000000, biomeMult: null},
+    {name: "Apostolos : Veil", normal: 800000000, biomeMult: null},
+    {name: "Wonderland", normal: 12000000, biomeMult: null},
+    {name: "Santa Frost", normal: 15000000, biomeMult: null},
+    {name: "Winter Fantasy", normal: 72000000, biomeMult: null},
+    {name: "Express", normal: 90000000, biomeMult: null},
+    {name: "Abominable", normal: 120000000, biomeMult: 3},
+    {name: "Atlas : Yuletide", normal: 510000000, biomeMult: 3},
+    {name: "Flushed : Troll", normal: 1000000, biomeMult: null},
+    {name: "Origin : Onion", normal: 8000000, biomeMult: null},
+    {name: "Glock : Glock Of The Sky", normal: 170000000, biomeMult: null},
+    {name: "Manta", normal: 300000000, biomeMult: 2},
+    {name: "Aegis : Watergun", normal: 825000000, biomeMult: 2}
 ];
     const limboAuraList = [
+        {}
         {name: "Unknown", normal: 444444444, biomeMult: null},
         {name: "Elude", normal: 555555555, biomeMult: null},
         {name: "Prologue", normal: 666616111, biomeMult: null},
