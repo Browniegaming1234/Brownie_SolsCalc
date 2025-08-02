@@ -229,7 +229,10 @@
         let text = '';
 
         if (biomeMult !== null && biomeMult > 0) {
-          const btDenominator = biomeMultIsMultiplier ? (normalDenom / biomeMult) : (normalDenom * biomeMult);
+          const btDenominator = biomeMultIsMultiplier
+  ? (normalDenom * biomeMult)
+  : (normalDenom / biomeMult);
+
           let btChance = luck / btDenominator;
           if (!isFinite(btChance) || btChance <= 0) btChance = 0;
 
