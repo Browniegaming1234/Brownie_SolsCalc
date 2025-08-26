@@ -9,7 +9,6 @@
   <style>
     /* Base styles */
     body {
-      position: static;
       background: #0a0a12;
       color: #ddd;
       font-family: 'Exo 2', sans-serif;
@@ -17,209 +16,83 @@
       padding: 20px;
       overflow-x: hidden;
     }
-    h1, h2 {
-      color: #00ffff;
-      text-align: center;
-      margin-bottom: 8px;
-    }
-    label, input, button {
-      display: block;
-      width: 100%;
-      margin-top: 15px;
-    }
+    h1, h2 { color: #00ffff; text-align: center; margin-bottom: 8px; }
+    label, input, button { display: block; width: 100%; margin-top: 15px; }
     input {
-      padding: 10px;
-      font-size: 1rem;
-      border-radius: 5px;
-      border: none;
-      background: #22222a;
-      color: #eee;
-      box-sizing: border-box;
+      padding: 10px; font-size: 1rem; border-radius: 5px; border: none;
+      background: #22222a; color: #eee; box-sizing: border-box;
     }
     button {
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      background: #00ffff;
-      color: #000;
-      cursor: pointer;
-      box-shadow: 0 0 10px #00ffff;
-      transition: background 0.3s ease;
-      user-select: none;
+      padding: 12px; border: none; border-radius: 8px; font-size: 1.1rem;
+      background: #00ffff; color: #000; cursor: pointer; box-shadow: 0 0 10px #00ffff;
+      transition: background 0.3s ease; user-select: none;
     }
-    button:hover {
-      background: #00cccc;
-    }
+    button:hover { background: #00cccc; }
     #result {
-      margin-top: 20px;
-      background: #11111a;
-      border-radius: 10px;
-      padding: 15px;
-      box-shadow: 0 0 10px #004040;
-      min-height: 40px;
-      font-weight: 600;
+      margin-top: 20px; background: #11111a; border-radius: 10px; padding: 15px;
+      box-shadow: 0 0 10px #004040; min-height: 40px; font-weight: 600;
     }
     #auraList, #limitedAuraList, #limboAuraList {
-      margin-top: 30px;
-      border-radius: 8px;
-      background: #121224;
-      border: 1px solid #222;
-      padding: 10px 0;
-      max-height: 350px;
-      overflow-y: auto;
+      margin-top: 30px; border-radius: 8px; background: #121224; border: 1px solid #222;
+      padding: 10px 0; max-height: 350px; overflow-y: auto;
     }
-    .aura-item {
-      padding: 10px 15px;
-      border-bottom: 1px solid #222;
-    }
-    .rolls-info {
-      font-size: 0.95rem;
-      color: #bbb;
-      margin-top: 4px;
-    }
-    #auraList::-webkit-scrollbar,
-    #limitedAuraList::-webkit-scrollbar,
-    #limboAuraList::-webkit-scrollbar {
-      width: 8px;
-    }
-    #auraList::-webkit-scrollbar-thumb,
-    #limitedAuraList::-webkit-scrollbar-thumb,
-    #limboAuraList::-webkit-scrollbar-thumb {
-      background: #00cccc;
-      border-radius: 4px;
-    }
-
-    /* Update Log button */
+    .aura-item { padding: 10px 15px; border-bottom: 1px solid #222; }
+    .rolls-info { font-size: 0.95rem; color: #bbb; margin-top: 4px; }
+    #auraList::-webkit-scrollbar, #limitedAuraList::-webkit-scrollbar, #limboAuraList::-webkit-scrollbar { width: 8px; }
+    #auraList::-webkit-scrollbar-thumb, #limitedAuraList::-webkit-scrollbar-thumb, #limboAuraList::-webkit-scrollbar-thumb { background: #00cccc; border-radius: 4px; }
     #updateLogBtn {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      width: 120px;
-      padding: 10px 12px;
-      font-weight: 700;
-      font-size: 0.9rem;
-      background: #00ffff;
-      color: #000;
-      border-radius: 8px;
-      box-shadow: 0 0 15px #00ffff;
-      cursor: pointer;
-      z-index: 1100;
-      user-select: none;
-      transition: background 0.3s ease;
+      position: fixed; top: 20px; right: 20px; width: 120px; padding: 10px 12px;
+      font-weight: 700; font-size: 0.9rem; background: #00ffff; color: #000;
+      border-radius: 8px; box-shadow: 0 0 15px #00ffff; cursor: pointer; z-index: 1100;
+      user-select: none; transition: background 0.3s ease;
     }
-    #updateLogBtn:hover {
-      background: #00cccc;
-    }
-
-    /* Modal backdrop */
+    #updateLogBtn:hover { background: #00cccc; }
     #modalBackdrop {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(3px);
-      z-index: 1050;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(3px); z-index: 1050;
       display: none;
     }
-
-    /* Modal content */
     #updateLogModal {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #121224;
-      border-radius: 12px;
-      padding: 25px 30px;
-      max-width: 90vw;
-      max-height: 80vh;
-      overflow-y: auto;
-      box-shadow: 0 0 30px #00ffff;
-      color: #ddd;
-      font-size: 1rem;
-      line-height: 1.4;
-      z-index: 1101;
-      display: none;
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: #121224; border-radius: 12px; padding: 25px 30px;
+      max-width: 90vw; max-height: 80vh; overflow-y: auto; box-shadow: 0 0 30px #00ffff;
+      color: #ddd; font-size: 1rem; line-height: 1.4; z-index: 1101; display: none;
     }
-    #updateLogModal h2 {
-      margin-top: 0;
-      margin-bottom: 15px;
-      color: #00ffff;
-      text-align: center;
-    }
-    #updateLogModal p {
-      margin-bottom: 10px;
-      white-space: pre-wrap;
-    }
+    #updateLogModal h2 { margin-top: 0; margin-bottom: 15px; color: #00ffff; text-align: center; }
     #closeModalBtn {
-      display: block;
-      margin: 15px auto 0;
-      background: #00cccc;
-      color: #000;
-      font-weight: 700;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      box-shadow: 0 0 10px #00cccc;
-      transition: background 0.3s ease;
-      user-select: none;
+      display: block; margin: 15px auto 0; background: #00cccc; color: #000;
+      font-weight: 700; padding: 10px 20px; border-radius: 8px; cursor: pointer; box-shadow: 0 0 10px #00cccc;
+      transition: background 0.3s ease; user-select: none;
     }
-    #closeModalBtn:hover {
-      background: #009999;
-    }
+    #closeModalBtn:hover { background: #009999; }
   </style>
 </head>
 <body>
-  <h1 style="text-align: center;">
-    <img 
-      src="https://raw.githubusercontent.com/Browniegaming1234/SolsCalc_Test/main/ico.png" 
-      alt="Logo" 
-      style="width:64px; height:64px; vertical-align: middle; margin-right:8px;"
-    >
+  <h1>
+    <img src="https://raw.githubusercontent.com/Browniegaming1234/SolsCalc_Test/main/ico.png" alt="Logo" style="width:64px;height:64px;vertical-align:middle;margin-right:8px;">
     Sol's RNG Aura Calculator
   </h1>
 
-  <div style="text-align: center;">
-    <p>
-      Sol's RNG Calculator helps you estimate how many rolls it would take to obtain a specific aura in Sol's RNG, based on your current luck. Just input your luck and desired aura to see your odds and roll count!
-    </p>
-
-    <label for="luck">Enter Your Luck:</label><br />
-    <input type="number" id="luck" placeholder="Your Luck" min="0" step="any" /><br /><br />
-
+  <div style="text-align:center;">
+    <p>Sol's RNG Calculator helps you estimate how many rolls it would take to obtain a specific aura in Sol's RNG, based on your current luck. Just input your luck and desired aura to see your odds and roll count!</p>
+    <label for="luck">Enter Your Luck:</label>
+    <input type="number" id="luck" placeholder="Your Luck" min="0" step="any" />
     <button id="calculateBtn">Calculate Rolls</button>
-
-    <div id="result" style="margin-top: 20px;"></div>
+    <div id="result"></div>
     <div id="auraList"></div>
+
+    <h2>Limited-Time Auras</h2>
+    <div id="limitedAuraList"></div>
+
+    <h2>HEY!</h2>
+    <label>Luck works differently in Limbo, so these results may not be accurate. However, if you input the correct luck value, the calculation should work perfectly fine!</label>
+
+    <h2>Limbo-Auras</h2>
+    <div id="limboAuraList"></div>
   </div>
-  
-  <script>
-  const resultDiv = document.getElementById("result");
-
-  resultDiv.innerHTML = `
-    <h3>If Nil is next to rarity then,</h3>
-    <p>There is no breakthrough multipler on that aura!</p>
-  `;
-</script>
-</body>
-
-  <h2>Limited-Time Auras</h2>
-  <div id="limitedAuraList"></div>
-
-  <div style="text-align: center;">
-  <h2>HEY!</h2>
-  <label for="msg">
-    Luck works differently in Limbo, so these results may not be accurate. However, if you input the correct luck value, the calculation should work perfectly fine!
-  </label>
-  </div>
-
-  <h2>Limbo-Auras</h2>
-  <div id="limboAuraList"></div>
 
   <button id="updateLogBtn" aria-label="Open Update Log">Update Log</button>
-
   <div id="modalBackdrop" tabindex="-1"></div>
-
   <section id="updateLogModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="0">
     <h2 id="modalTitle">Update Log</h2>
     <p>Version 1.0.0 - Initial release, Full Calculator! More auras added soon!</p>
@@ -227,12 +100,21 @@
   </section>
 
   <script>
+    const resultDiv = document.getElementById("result");
+    resultDiv.innerHTML = `
+      <h3>If Nil is next to rarity then,</h3>
+      <p>There is no breakthrough multiplier on that aura!</p>
+    `;
 
     const calculateBtn = document.getElementById('calculateBtn');
     const luckInput = document.getElementById('luck');
     const auraListDiv = document.getElementById('auraList');
     const limitedAuraListDiv = document.getElementById('limitedAuraList');
     const limboAuraListDiv = document.getElementById('limboAuraList');
+    const updateLogBtn = document.getElementById('updateLogBtn');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const updateLogModal = document.getElementById('updateLogModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
 
     // SCRIPT MADE BY BROWNIE!  //
     // ===== Biome Multis ===== //
@@ -377,71 +259,44 @@
       data.forEach(aura => {
         const item = document.createElement('div');
         item.className = 'aura-item';
-
-        const title = document.createElement('div');
-        const biomeStr = aura.biomeMult !== null && aura.biomeMult !== undefined ? `[${formatNumber(aura.biomeMult)}]` : '[Nil]';
+        const biomeStr = aura.biomeMult != null ? `[${formatNumber(aura.biomeMult)}]` : '[Nil]';
         const normalStr = formatNumber(aura.normal);
+        const title = document.createElement('div');
         title.textContent = `${aura.name} [${normalStr}] ${biomeStr}`;
         title.style.fontWeight = 'bold';
-
         const rollsInfo = document.createElement('div');
         rollsInfo.className = 'rolls-info';
         rollsInfo.textContent = '';
-
         item.appendChild(title);
         item.appendChild(rollsInfo);
-
-        item.dataset.normal = aura.normal != null ? aura.normal.toString() : '';
-        item.dataset.biomeMult = aura.biomeMult != null ? aura.biomeMult.toString() : '';
+        item.dataset.normal = aura.normal ?? '';
+        item.dataset.biomeMult = aura.biomeMult ?? '';
         item.dataset.biomeMultIsMultiplier = aura.biomeMultIsMultiplier === true ? 'true' : 'false';
-
         container.appendChild(item);
       });
     }
 
     function calculate() {
       const luck = parseFloat(luckInput.value);
-      if (isNaN(luck) || luck <= 0) {
-        alert('Please enter a valid luck value greater than 0.');
-        return;
-      }
-
-      const allItems = [
-        ...auraListDiv.querySelectorAll('.aura-item'),
-        ...limitedAuraListDiv.querySelectorAll('.aura-item'),
-        ...limboAuraListDiv.querySelectorAll('.aura-item')
-      ];
-
+      if (isNaN(luck) || luck <= 0) { alert('Enter valid luck > 0'); return; }
+      const allItems = [...auraListDiv.querySelectorAll('.aura-item'),
+                        ...limitedAuraListDiv.querySelectorAll('.aura-item'),
+                        ...limboAuraListDiv.querySelectorAll('.aura-item')];
       allItems.forEach(item => {
         const normalDenom = parseFloat(item.dataset.normal);
-        const biomeMultRaw = item.dataset.biomeMult;
-        const biomeMult = biomeMultRaw !== '' ? parseFloat(biomeMultRaw) : null;
+        const biomeMult = item.dataset.biomeMult !== '' ? parseFloat(item.dataset.biomeMult) : null;
         const biomeMultIsMultiplier = item.dataset.biomeMultIsMultiplier === 'true';
-
-        let nativeDenom = normalDenom;
-        let btDenom = null;
-
-        if (biomeMult !== null && biomeMult > 0) {
-          if (biomeMultIsMultiplier) {
-            nativeDenom = normalDenom;
-            btDenom = normalDenom * biomeMult;
-          } else {
-            nativeDenom = normalDenom / biomeMult;
-            btDenom = normalDenom;
-          }
+        let nativeDenom = normalDenom, btDenom = null;
+        if (biomeMult != null && biomeMult > 0) {
+          if (biomeMultIsMultiplier) { btDenom = normalDenom * biomeMult; }
+          else { nativeDenom = normalDenom / biomeMult; btDenom = normalDenom; }
         }
-
-        const nativeChance = luck / nativeDenom;
-        const nativeRolls = nativeChance > 0 ? Math.ceil(1 / nativeChance) : Infinity;
-
+        const nativeRolls = nativeDenom > 0 ? Math.ceil(1 / (luck / nativeDenom)) : Infinity;
         let text = `Rolls needed: ${nativeRolls === Infinity ? '∞' : formatNumber(nativeRolls)}`;
-
-        if (btDenom !== null) {
-          const btChance = luck / btDenom;
-          const btRolls = btChance > 0 ? Math.ceil(1 / btChance) : Infinity;
+        if (btDenom != null) {
+          const btRolls = btDenom > 0 ? Math.ceil(1 / (luck / btDenom)) : Infinity;
           text = `Native Rolls: ${formatNumber(nativeRolls)}, Breakthrough Rolls: ${formatNumber(btRolls)}`;
         }
-
         item.querySelector('.rolls-info').textContent = text;
       });
     }
@@ -451,40 +306,15 @@
       createAuraList(limitedAuraData, limitedAuraListDiv);
       createAuraList(limboAuraList, limboAuraListDiv);
     });
-
     calculateBtn.addEventListener('click', calculate);
-    luckInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') calculate();
-    });
+    luckInput.addEventListener('keydown', e => { if(e.key==='Enter') calculate(); });
 
-    const updateLogBtn = document.getElementById('updateLogBtn');
-    const modalBackdrop = document.getElementById('modalBackdrop');
-    const updateLogModal = document.getElementById('updateLogModal');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-
-    function openModal() {
-      modalBackdrop.style.display = 'block';
-      updateLogModal.style.display = 'block';
-      updateLogModal.focus();
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal() {
-      modalBackdrop.style.display = 'none';
-      updateLogModal.style.display = 'none';
-      document.body.style.overflow = '';
-      updateLogBtn.focus();
-    }
-
+    function openModal() { modalBackdrop.style.display='block'; updateLogModal.style.display='block'; updateLogModal.focus(); document.body.style.overflow='hidden'; }
+    function closeModal() { modalBackdrop.style.display='none'; updateLogModal.style.display='none'; document.body.style.overflow=''; updateLogBtn.focus(); }
     updateLogBtn.addEventListener('click', openModal);
     closeModalBtn.addEventListener('click', closeModal);
     modalBackdrop.addEventListener('click', closeModal);
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && modalBackdrop.style.display === 'block') {
-        closeModal();
-      }
-    });
+    document.addEventListener('keydown', e => { if(e.key==='Escape' && modalBackdrop.style.display==='block') closeModal(); });
   </script>
 </body>
 </html>
